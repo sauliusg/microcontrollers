@@ -1,3 +1,5 @@
+#include <dht11.h>
+
 // 
 //   FILE:  dht11_test1.pde
 // PURPOSE: DHT11 library test sketch for Arduino
