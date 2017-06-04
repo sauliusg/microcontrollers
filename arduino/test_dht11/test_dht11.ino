@@ -63,11 +63,11 @@ double dewPointFast(double celsius, double humidity)
 
 dht11 DHT11;
 
-#define DHT11PIN 2
+#define DHT11PIN 7
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.println("DHT11 TEST PROGRAM ");
   Serial.print("LIBRARY VERSION: ");
   Serial.println(DHT11LIB_VERSION);
@@ -100,7 +100,7 @@ void loop()
   Serial.print("Humidity (%): ");
   Serial.println((float)DHT11.humidity, 2);
 
-  Serial.print("Temperature (°C): ");
+  Serial.print("Temperature (C): ");
   Serial.println((float)DHT11.temperature, 2);
 
   Serial.print("Temperature (°F): ");
