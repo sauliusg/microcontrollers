@@ -24,7 +24,7 @@ void loop()
   int chk_dht22 = DHT22.read(DHT22_PIN);
 
   lcd.setCursor(0,0); 
-  lcd.print("DTH11: ");
+  lcd.print("DHT11: ");
   if( chk_dht11 == DHTLIB_OK ) {
     lcd.print(DHT11.temperature, 0);
     lcd.print((char)223);
