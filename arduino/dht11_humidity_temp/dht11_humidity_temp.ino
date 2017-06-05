@@ -16,6 +16,7 @@ void setup()
 {
   pinMode( ledPinNo, OUTPUT );
   lcd.begin(16, 2);
+  Serial.begin(9600);
 }
 
 void loop()
@@ -48,6 +49,18 @@ void loop()
     lcd.print("T=?? ");
     lcd.print("RH=?");    
   }
+
+  Serial.print("DTH11: T = ");
+  Serial.print(DHT11.temperature);
+  Serial.print(" RH = ");
+  Serial.print(DHT11.humidity);
+  Serial.print(" ");
+
+  Serial.print("DTH22: T = ");
+  Serial.print(DHT22.temperature);
+  Serial.print(" RH = ");
+  Serial.print(DHT22.humidity);
+  Serial.println("");
 
   if( step == 0 ) {
     digitalWrite( ledPinNo, HIGH );
