@@ -19,10 +19,13 @@ void setup()
   Serial.begin(9600);
 }
 
+int chk_dht11;
+int chk_dht22;
+
 void loop()
 {
-  int chk_dht11 = DHT11.read11(DHT11_PIN);
-  int chk_dht22 = DHT22.read(DHT22_PIN);
+  chk_dht11 = step == 0 ? DHT11.read11(DHT11_PIN) : chk_dht11;
+  chk_dht22 = DHT22.read(DHT22_PIN);
 
   lcd.setCursor(0,0); 
   lcd.print("DHT11: ");
