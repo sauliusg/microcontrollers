@@ -34,7 +34,7 @@ void loop()
   lcd.print(step+1);
   lcd.print("): ");
 
-  Serial.print("11(");
+  Serial.print("DHT11(");
   Serial.print(step+1);
   Serial.print("): ");
 
