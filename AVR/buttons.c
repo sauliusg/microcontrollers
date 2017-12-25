@@ -105,8 +105,8 @@ static short digit7seg[] = {
 
  button1 - PD6
  button2 - PD7
- button3 - PD5 (planned, not yet connected)
- button4 - PD0 (planned, not yet connected)
+ button3 - PD5 (connected, check)
+ button4 - PD0 (connected, check)
  
 */
 
