@@ -103,10 +103,10 @@ static short digit7seg[] = {
 
  PORTB:
 
- button1 - PB4
- button2 - PB5
- button3 - (PB3 -- not connected yet)
- button4 -
+ button1 - PD6
+ button2 - PD7
+ button3 - PD5 (planned, not yet connected)
+ button4 - PD0 (planned, not yet connected)
  
 */
 
