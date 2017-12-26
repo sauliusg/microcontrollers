@@ -1,9 +1,7 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
-#define sbi(REGISTER,BIT) REGISTER |= (1 << BIT);    /* sets BIT in REGISTER */
-#define cbi(REGISTER,BIT) REGISTER &= ~(1 << BIT);   /* clears BIT in REGISTER */
-
-static short digits[4];
+static volatile short digits[4];
 
 void delay_short( unsigned short count )
 {
@@ -98,6 +96,8 @@ short read( unsigned short cycles )
     return val;
 }
 
+static volatile long seconds;
+
 void display_digits(unsigned short cycles)
 {
     PORTC = 0x21;
@@ -169,13 +169,64 @@ int main(void)
     digits[2] = digit7seg[2];
     digits[3] = digit7seg[3];
 
-    bnumbers[2] = 0; /* buton 1 */
-    bnumbers[3] = 1; /* buton 2 */
-    bnumbers[0] = 2; /* buton 3 */
-    bnumbers[1] = 3; /* buton 4 */
+    bnumbers[2] = 0; /* button 1 */
+    bnumbers[3] = 1; /* button 2 */
+    bnumbers[0] = 2; /* button 3 */
+    bnumbers[1] = 3; /* button 4 */
+
+    /* Set up Timer1 for 1s at 6.400 MHz crystal: */
+    /* Number of timer pre-scaled pulses to count: */
+    OCR1A = 25000;
+    /* Mode 4, CTC on OCR1A: */
+    TCCR1B |= (1 << WGM12);
+    /* Set interrupt on compare match: */
+    // TIMSK |= (1 << OCIE1A);
+    /* set prescaler to 128 and start the timer: */
+    TCCR1B |= (1 << CS12);
+
+    // /* Set up Timer1 for 1s at 6.400 MHz crystal: */
+    // /* Normal Mode: */
+    // TCCR1B = 0;
+    // /* Set interrupt on overfloe: */
+    // TIMSK |= (1 << TOIE1);
+    // /* set prescaler to 128 and start the timer: */
+    // TCCR1B |= (1 << CS12);
+
+
+    // // set up timer with prescaler = 256:
+    // TCCR0 |= (1 << CS02);
+    // // initialize counter:
+    // TCNT0 = 0;
+    // // enable overflow interrupt:
+    // TIMSK |= (1 << TOIE0);
+
+    /* Enable interrupts: */
+    sei();
 
     while (1) {
 	read_and_display( /* display_cycles = */ 200,
 			  /* read_cycles = */ 127 );
+	if( TIFR & (1 << OCF1A) ) {
+	    seconds ++;
+	    TIFR &= (1 << OCF1A);
+	}
+	digits[3] = digit7seg[seconds % 10];
     }
+}
+
+ISR(TIMER0_OVF_vect)
+{
+    seconds ++;
+}
+
+ISR (TIMER1_COMPA_vect)
+{
+    seconds ++;
+    digits[3] = digit7seg[seconds % 10] & ~SEG_H;
+}
+
+ISR (TIMER1_OVF_vect)
+{
+    seconds ++;
+    digits[3] = digit7seg[seconds % 10] & ~SEG_H;
 }

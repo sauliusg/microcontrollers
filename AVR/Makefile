@@ -1,4 +1,4 @@
-MCU=atmega16
+MCU=atmega8
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 # optimize for size:
