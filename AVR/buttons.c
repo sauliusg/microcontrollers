@@ -139,7 +139,8 @@ int main(void)
     DDRC |= 0x0F;
     DDRD |= 0xFF;
     PORTD = 0x00;
-    digits[2] = digits[0] = 0;
+    digits[3] = digit7seg[3];
+    digits[2] = digit7seg[2];
 
     while (1) {
 	read_and_display( /* display_cycles = */ 200,
