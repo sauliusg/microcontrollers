@@ -103,19 +103,19 @@ short read( unsigned short cycles )
 
 void display_digits(unsigned short cycles)
 {
-    PORTC = 0x02;
+    PORTC = 0x22;
     PORTD = digits[1];
     delay_short( cycles );
 
-    PORTC = 0x04;
+    PORTC = 0x24;
     PORTD = digits[2];
     delay_short( cycles );
 
-    PORTC = 0x08;
+    PORTC = 0x28;
     PORTD = digits[3];
     delay_short( cycles );
 
-    PORTC = 0x01;
+    PORTC = 0x21;
     PORTD = digits[0];
     delay_short( cycles );
 }
