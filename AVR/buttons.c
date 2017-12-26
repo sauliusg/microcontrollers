@@ -128,7 +128,7 @@ void read_and_display( unsigned short display_cycles,
 		       unsigned short read_cycles )
 {
     display_digits( display_cycles );
-    //read_buttons( read_cycles );
+    read_buttons( read_cycles );
 }
 
 int main(void)
