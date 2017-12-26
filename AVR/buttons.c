@@ -117,11 +117,38 @@ void display_digits(unsigned short cycles)
     delay_short( cycles );
 }
 
+static short old_buttons;
+
+static short counts[4];
+
 void read_buttons( unsigned short read_cycles )
 {
-    short buttons = read( read_cycles );
-    digits[0] = digit7seg[buttons & 0x0F];
-    digits[1] = digit7seg[(buttons >> 4) & 0x0F] | SEG_H;    
+    short buttons = read( read_cycles ) >> 4;;
+    if( buttons != old_buttons ) {
+	short i;
+	for( i = 0; i < 4; i++ ) {
+	    short mask = (0x01 << i);
+	    if( (buttons & mask) < (old_buttons & mask) ) {
+		counts[i] ++;
+		if( counts[i] > 15 ) {
+		    counts[i] = 0;
+		}
+		digits[i] = digit7seg[counts[i]];
+	    }
+	}
+	for( i = 0; i < 4; i++ ) {
+	    short mask = (0x01 << i);
+	    if( buttons & mask ) {
+		digits[i] |= SEG_H;
+	    } else {
+		digits[i] &= ~SEG_H;
+	    }
+	}
+	
+	old_buttons = buttons;
+    }
+    //digits[0] = digit7seg[buttons & 0x0F];
+    //digits[1] = digit7seg[(buttons >> 4) & 0x0F] | SEG_H;    
 }
 
 void read_and_display( unsigned short display_cycles,
