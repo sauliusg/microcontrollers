@@ -56,6 +56,11 @@ static short digit7seg[] = {
  Button layout:
  PORTC:
 
+ indicator 0 (leftomost) : PC0
+ indicator 1             : PC1
+ indicator 2             : PC2
+ indicator 3 (rightmost) : PC3
+
  common - PC5
 
  PORTB:
@@ -95,6 +100,10 @@ short read( unsigned short cycles )
 
 void display_digits(unsigned short cycles)
 {
+    PORTC = 0x21;
+    PORTD = digits[0];
+    delay_short( cycles );
+
     PORTC = 0x22;
     PORTD = digits[1];
     delay_short( cycles );
@@ -105,10 +114,6 @@ void display_digits(unsigned short cycles)
 
     PORTC = 0x28;
     PORTD = digits[3];
-    delay_short( cycles );
-
-    PORTC = 0x21;
-    PORTD = digits[0];
     delay_short( cycles );
 }
 
@@ -123,7 +128,7 @@ void read_and_display( unsigned short display_cycles,
 		       unsigned short read_cycles )
 {
     display_digits( display_cycles );
-    read_buttons( read_cycles );
+    //read_buttons( read_cycles );
 }
 
 int main(void)
@@ -132,12 +137,13 @@ int main(void)
     DDRD |= 0xFF;
     PORTD = 0x00;
 
-    digits[3] = digit7seg[3];
+    digits[0] = digit7seg[0];
+    digits[1] = digit7seg[1];
     digits[2] = digit7seg[2];
+    digits[3] = digit7seg[3];
 
     while (1) {
 	read_and_display( /* display_cycles = */ 200,
-			  /* read_cycles = */ 127
-			);
+			  /* read_cycles = */ 127 );
     }
 }
