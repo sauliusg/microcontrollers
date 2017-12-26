@@ -75,8 +75,7 @@ short read( unsigned short cycles )
     /* disable all 7-seg indicators: */
     PORTC = 0x00;
     /* enable common button pin PC5: */
-    /* programm PC5 for output, set it low */
-    DDRC  |= 0x20;
+    /* set it low */
     PORTC = 0x00;
     // DDRC  |= 0xF0;
     // PORTC |= 0xF0;
@@ -136,9 +135,10 @@ void read_and_display( unsigned short display_cycles,
 
 int main(void)
 {
-    DDRC |= 0x0F;
+    DDRC |= 0x2F;
     DDRD |= 0xFF;
     PORTD = 0x00;
+
     digits[3] = digit7seg[3];
     digits[2] = digit7seg[2];
 
