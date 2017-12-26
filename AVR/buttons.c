@@ -72,19 +72,12 @@ short read( unsigned short cycles )
     unsigned short i;
     short val = 0xFF;
 
-    /* disable all 7-seg indicators: */
+    /* disable all 7-seg indicators; set pin PC5 to low: */
     PORTC = 0x00;
-    /* enable common button pin PC5: */
-    /* set it low */
-    PORTC = 0x00;
-    // DDRC  |= 0xF0;
-    // PORTC |= 0xF0;
-    /* program PORTD PB3 - PB5 for input: */
-    // DDRD  |= ~(0x04 + 0x08 + 0x10);
-    DDRD = 0x00;
-    /* enable pull-up resistors: */
-    // PORTD = 0x04 + 0x08 + 0x10;
+    /* Clearing old values from PORTD: */
     PORTD = 0xFF;
+    /* Configure PORTD for input: */
+    DDRD = 0x00;
 
     /* read the values, do debouncing: */
     for( i = 0; i < cycles; i++ ) {
