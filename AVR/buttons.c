@@ -13,10 +13,10 @@ void delay_short( unsigned short count )
 void delay_ms(unsigned short ms)
 {
         unsigned short outer1, outer2, innermost;
-        outer1 = 20;
+        outer1 = 10;
 
         while (outer1) {
-                outer2 = 20;
+                outer2 = 10;
                 while (outer2) {
 		        innermost = ms;
                         while ( innermost ) {
