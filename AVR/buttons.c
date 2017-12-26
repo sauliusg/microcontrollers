@@ -118,8 +118,8 @@ void display_digits(unsigned short cycles)
 }
 
 static short old_buttons;
-
 static short counts[4];
+static short bnumbers[4]; /* Button position numbers */
 
 void read_buttons( unsigned short read_cycles )
 {
@@ -127,28 +127,28 @@ void read_buttons( unsigned short read_cycles )
     if( buttons != old_buttons ) {
 	short i;
 	for( i = 0; i < 4; i++ ) {
+	    short j = bnumbers[i];
 	    short mask = (0x01 << i);
 	    if( (buttons & mask) < (old_buttons & mask) ) {
 		counts[i] ++;
 		if( counts[i] > 15 ) {
 		    counts[i] = 0;
 		}
-		digits[i] = digit7seg[counts[i]];
+		digits[j] = digit7seg[counts[i]];
 	    }
 	}
 	for( i = 0; i < 4; i++ ) {
 	    short mask = (0x01 << i);
+	    short j = bnumbers[i];
 	    if( buttons & mask ) {
-		digits[i] |= SEG_H;
+		digits[j] |= SEG_H;
 	    } else {
-		digits[i] &= ~SEG_H;
+		digits[j] &= ~SEG_H;
 	    }
 	}
 	
 	old_buttons = buttons;
     }
-    //digits[0] = digit7seg[buttons & 0x0F];
-    //digits[1] = digit7seg[(buttons >> 4) & 0x0F] | SEG_H;    
 }
 
 void read_and_display( unsigned short display_cycles,
@@ -168,6 +168,11 @@ int main(void)
     digits[1] = digit7seg[1];
     digits[2] = digit7seg[2];
     digits[3] = digit7seg[3];
+
+    bnumbers[2] = 0; /* buton 1 */
+    bnumbers[3] = 1; /* buton 2 */
+    bnumbers[0] = 2; /* buton 3 */
+    bnumbers[1] = 3; /* buton 4 */
 
     while (1) {
 	read_and_display( /* display_cycles = */ 200,
