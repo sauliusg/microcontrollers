@@ -138,7 +138,6 @@ int main(void)
 {
     DDRC |= 0x0F;
     DDRD |= 0xFF;
-    PORTC = 0x01;
     PORTD = 0x00;
     digits[2] = digits[0] = 0;
 
