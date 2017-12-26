@@ -124,7 +124,7 @@ LOAD /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0x70e
+.text           0x00000000      0x608
  *(.vectors)
  .vectors       0x00000000       0x26 /usr/lib/gcc/avr/4.2.2/../../../../avr/lib/avr4/crtm8.o
                 0x00000000                __vectors
@@ -190,47 +190,47 @@ LOAD /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a
                 0x0000005c                __vector_7
                 0x0000005c                __vector_5
                 0x0000005c                __vector_4
+                0x0000005c                __vector_9
                 0x0000005c                __vector_2
                 0x0000005c                __vector_15
+                0x0000005c                __vector_8
                 0x0000005c                __vector_14
                 0x0000005c                __vector_10
                 0x0000005c                __vector_16
                 0x0000005c                __vector_18
- .text          0x0000005e      0x5c6 buttons.o
-                0x000004c4                __vector_6
-                0x00000370                read_and_display
-                0x00000182                read_buttons
+ .text          0x0000005e      0x4c0 buttons.o
+                0x000000fe                __vector_6
+                0x00000420                read_and_display
+                0x00000232                read_buttons
                 0x00000088                read
                 0x0000005e                delay_short
-                0x00000394                main
-                0x0000046e                __vector_9
-                0x00000574                __vector_8
-                0x000000fe                display_digits
- .text          0x00000624        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_divmodsi4.o)
- .text          0x00000624        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_prologue.o)
- .text          0x00000624        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_epilogue.o)
- .text          0x00000624        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
- .text          0x00000624        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_copy_data.o)
- .text          0x00000624        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_clear_bss.o)
- .text          0x00000624        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_udivmodsi4.o)
-                0x00000624                . = ALIGN (0x2)
+                0x00000444                main
+                0x000001ae                display_digits
+ .text          0x0000051e        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_divmodsi4.o)
+ .text          0x0000051e        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_prologue.o)
+ .text          0x0000051e        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_epilogue.o)
+ .text          0x0000051e        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
+ .text          0x0000051e        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_copy_data.o)
+ .text          0x0000051e        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_clear_bss.o)
+ .text          0x0000051e        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_udivmodsi4.o)
+                0x0000051e                . = ALIGN (0x2)
  *(.text.*)
- .text.libgcc   0x00000624       0x36 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_divmodsi4.o)
-                0x00000624                __divmodsi4
- .text.libgcc   0x0000065a       0x38 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_prologue.o)
-                0x0000065a                __prologue_saves__
- .text.libgcc   0x00000692       0x36 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_epilogue.o)
-                0x00000692                __epilogue_restores__
- .text.libgcc   0x000006c8        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
- .text.libgcc   0x000006c8        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_copy_data.o)
- .text.libgcc   0x000006c8        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_clear_bss.o)
- .text.libgcc   0x000006c8       0x44 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_udivmodsi4.o)
-                0x000006c8                __udivmodsi4
-                0x0000070c                . = ALIGN (0x2)
+ .text.libgcc   0x0000051e       0x36 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_divmodsi4.o)
+                0x0000051e                __divmodsi4
+ .text.libgcc   0x00000554       0x38 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_prologue.o)
+                0x00000554                __prologue_saves__
+ .text.libgcc   0x0000058c       0x36 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_epilogue.o)
+                0x0000058c                __epilogue_restores__
+ .text.libgcc   0x000005c2        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
+ .text.libgcc   0x000005c2        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_copy_data.o)
+ .text.libgcc   0x000005c2        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x000005c2       0x44 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_udivmodsi4.o)
+                0x000005c2                __udivmodsi4
+                0x00000606                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000070c        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
-                0x0000070c                exit
-                0x0000070c                _exit
+ .fini9         0x00000606        0x0 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
+                0x00000606                exit
+                0x00000606                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -249,11 +249,11 @@ LOAD /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000070c        0x2 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
+ .fini0         0x00000606        0x2 /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a(_exit.o)
  *(.fini0)
-                0x0000070e                _etext = .
+                0x00000608                _etext = .
 
-.data           0x00800060       0x20 load address 0x0000070e
+.data           0x00800060       0x20 load address 0x00000608
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800060        0x0 /usr/lib/gcc/avr/4.2.2/../../../../avr/lib/avr4/crtm8.o
@@ -273,7 +273,7 @@ LOAD /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a
                 0x00800080                _edata = .
                 0x00800080                PROVIDE (__data_end, .)
 
-.bss            0x00800080       0x1e load address 0x0000072e
+.bss            0x00800080       0x1e load address 0x00000628
                 0x00800080                PROVIDE (__bss_start, .)
  *(.bss)
  .bss           0x00800080        0x0 /usr/lib/gcc/avr/4.2.2/../../../../avr/lib/avr4/crtm8.o
@@ -288,8 +288,8 @@ LOAD /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a
  *(.bss*)
  *(COMMON)
                 0x0080009e                PROVIDE (__bss_end, .)
-                0x0000070e                __data_load_start = LOADADDR (.data)
-                0x0000072e                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00000608                __data_load_start = LOADADDR (.data)
+                0x00000628                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x0080009e        0x0
                 0x0080009e                PROVIDE (__noinit_start, .)
@@ -314,15 +314,15 @@ LOAD /usr/lib/gcc/avr/4.2.2/avr4/libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x00000000      0xccc
+.stab           0x00000000      0xc30
  *(.stab)
  .stab          0x00000000      0x378 /usr/lib/gcc/avr/4.2.2/../../../../avr/lib/avr4/crtm8.o
- .stab          0x00000378      0x954 buttons.o
-                                0x960 (size before relaxing)
+ .stab          0x00000378      0x8b8 buttons.o
+                                0x8c4 (size before relaxing)
 
-.stabstr        0x00000000      0x8bf
+.stabstr        0x00000000      0x899
  *(.stabstr)
- .stabstr       0x00000000      0x8bf /usr/lib/gcc/avr/4.2.2/../../../../avr/lib/avr4/crtm8.o
+ .stabstr       0x00000000      0x899 /usr/lib/gcc/avr/4.2.2/../../../../avr/lib/avr4/crtm8.o
 
 .stab.excl
  *(.stab.excl)

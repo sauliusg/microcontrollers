@@ -98,6 +98,12 @@ short read( unsigned short cycles )
 
 static volatile long seconds;
 
+ISR( TIMER1_COMPA_vect )
+{
+    seconds ++;
+    digits[3] = digit7seg[seconds % 10] & ~SEG_H;
+}
+
 void display_digits(unsigned short cycles)
 {
     PORTC = 0x21;
@@ -184,22 +190,6 @@ int main(void)
     /* set prescaler to 128 and start the timer: */
     TCCR1B |= (1 << CS12);
 
-    // /* Set up Timer1 for 1s at 6.400 MHz crystal: */
-    // /* Normal Mode: */
-    // TCCR1B = 0;
-    // /* Set interrupt on overfloe: */
-    // TIMSK |= (1 << TOIE1);
-    // /* set prescaler to 128 and start the timer: */
-    // TCCR1B |= (1 << CS12);
-
-
-    // // set up timer with prescaler = 256:
-    // TCCR0 |= (1 << CS02);
-    // // initialize counter:
-    // TCNT0 = 0;
-    // // enable overflow interrupt:
-    // TIMSK |= (1 << TOIE0);
-
     /* Enable interrupts: */
     sei();
 
@@ -207,21 +197,4 @@ int main(void)
 	read_and_display( /* display_cycles = */ 200,
 			  /* read_cycles = */ 127 );
     }
-}
-
-ISR(TIMER0_OVF_vect)
-{
-    seconds ++;
-}
-
-ISR (TIMER1_COMPA_vect)
-{
-    seconds ++;
-    digits[3] = digit7seg[seconds % 10] & ~SEG_H;
-}
-
-ISR (TIMER1_OVF_vect)
-{
-    seconds ++;
-    digits[3] = digit7seg[seconds % 10] & ~SEG_H;
 }
