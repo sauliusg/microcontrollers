@@ -132,7 +132,7 @@ short read( void )
 
     /* read the values, do debouncing: */
     for( i = 0; i < 127; i++ ) {
-	val = PIND;
+	val &= PIND;
     }
 
     /* clean up the ports: */
