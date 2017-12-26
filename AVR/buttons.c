@@ -166,7 +166,7 @@ int main(void)
 		// i = (i>>4)&0x0F;
 		// i &= 0x0F;
 		digits[0] = digit7seg[i & 0x0F];
-		digits[1] = digit7seg[(i >> 4) & 0x0F];
+		digits[1] = digit7seg[(i >> 4) & 0x0F] | SEG_H;
 		/*
                 if( i > 15 ) {
 		    i = 0;
