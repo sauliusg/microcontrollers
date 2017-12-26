@@ -180,7 +180,7 @@ int main(void)
     /* Mode 4, CTC on OCR1A: */
     TCCR1B |= (1 << WGM12);
     /* Set interrupt on compare match: */
-    // TIMSK |= (1 << OCIE1A);
+    TIMSK |= (1 << OCIE1A);
     /* set prescaler to 128 and start the timer: */
     TCCR1B |= (1 << CS12);
 
@@ -206,11 +206,6 @@ int main(void)
     while (1) {
 	read_and_display( /* display_cycles = */ 200,
 			  /* read_cycles = */ 127 );
-	if( TIFR & (1 << OCF1A) ) {
-	    seconds ++;
-	    TIFR &= (1 << OCF1A);
-	}
-	digits[3] = digit7seg[seconds % 10];
     }
 }
 
