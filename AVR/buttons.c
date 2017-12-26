@@ -10,49 +10,6 @@ void delay_short( unsigned short count )
     while( count-- > 0 );
 }
 
-void delay_ms(unsigned short ms)
-{
-        unsigned short outer1, outer2, innermost;
-        outer1 = 10;
-
-        while (outer1) {
-                outer2 = 10;
-                while (outer2) {
-		        innermost = ms;
-                        while ( innermost ) {
-			    innermost--;
-			}
-                        outer2--;
-			if( PORTC == 0x01 ) {
-			    PORTD = 0;
-			    PORTC = 0x00;
-			    delay_short( 200 );
-			    PORTC = 0x02;
-			    PORTD = digits[1];
-			} else if( PORTC == 0x32 ) {
-			    PORTD = 0;
-			    PORTC = 0x00;
-			    delay_short( 200 );
-			    PORTC = 0x04;
-			    PORTD = digits[2];
-			} else if( PORTC == 0x34 ) {
-			    PORTD = 0;
-			    PORTC = 0x00;
-			    delay_short( 200 );
-			    PORTC = 0x08;
-			    PORTD = digits[3];
-			} else {
-			    PORTD = 0;
-			    PORTC = 0x00;
-			    delay_short( 200 );
-			    PORTC = 0x01;
-			    PORTD = digits[0];
-			}
-                }
-                outer1--;
-        }
-}
-
 /*
  Segment layout:
  PORTD:
@@ -110,9 +67,9 @@ static short digit7seg[] = {
  
 */
 
-short read( void )
+short read( unsigned short cycles )
 {
-    short i;
+    unsigned short i;
     short val = 0xFF;
 
     /* disable all 7-seg indicators: */
@@ -131,7 +88,7 @@ short read( void )
     PORTD = 0xFF;
 
     /* read the values, do debouncing: */
-    for( i = 0; i < 127; i++ ) {
+    for( i = 0; i < cycles; i++ ) {
 	val &= PIND;
     }
 
@@ -141,47 +98,53 @@ short read( void )
     /* program PORTD for output: */
     DDRD  = 0xFF;
 
-    //val |= ~(0x04 + 0x08 + 0x10);
     return val;
+}
+
+void display_digits(unsigned short cycles)
+{
+    PORTC = 0x02;
+    PORTD = digits[1];
+    delay_short( cycles );
+
+    PORTC = 0x04;
+    PORTD = digits[2];
+    delay_short( cycles );
+
+    PORTC = 0x08;
+    PORTD = digits[3];
+    delay_short( cycles );
+
+    PORTC = 0x01;
+    PORTD = digits[0];
+    delay_short( cycles );
+}
+
+void read_buttons( unsigned short read_cycles )
+{
+    short buttons = read( read_cycles );
+    digits[0] = digit7seg[buttons & 0x0F];
+    digits[1] = digit7seg[(buttons >> 4) & 0x0F] | SEG_H;    
+}
+
+void read_and_display( unsigned short display_cycles,
+		       unsigned short read_cycles )
+{
+    display_digits( display_cycles );
+    read_buttons( read_cycles );
 }
 
 int main(void)
 {
-        short i = 0;
-	short j = 0;
-        /* enable  PD5 as output */
-        /* sbi(DDRD,PD5); */
-        DDRC |= 0x0F;
-        DDRD |= 0xFF;
-	PORTC = 0x01;
-	PORTD = 0x00;
-	digits[2] = digits[0] = 0;
-        while (1) {
-	        // digits[2] = digit7seg[i];
-	        // digits[3] = digit7seg[i];
-                /* led on, pin=0 */
-                /* cbi(PORTD,PD5); */
-                delay_ms(100);
-		i = read();
-		// i = (i>>4)&0x0F;
-		// i &= 0x0F;
-		digits[0] = digit7seg[i & 0x0F];
-		digits[1] = digit7seg[(i >> 4) & 0x0F] | SEG_H;
-		/*
-                if( i > 15 ) {
-		    i = 0;
-		    j ++;
-		    if( j > 15 )
-			j = 0;
-		    if( j == 0 ) {
-			digits[0] = 0;
-			digits[2] = 0;
-		    } else {
-			digits[0] = digit7seg[j];
-			digits[2] = digit7seg[j];
-		    }
-		}
-		*/
-        }
-        return 0;
+    DDRC |= 0x0F;
+    DDRD |= 0xFF;
+    PORTC = 0x01;
+    PORTD = 0x00;
+    digits[2] = digits[0] = 0;
+
+    while (1) {
+	read_and_display( /* display_cycles = */ 200,
+			  /* read_cycles = */ 127
+			);
+    }
 }
