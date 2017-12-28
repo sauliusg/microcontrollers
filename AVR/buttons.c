@@ -59,7 +59,7 @@ static short digit7seg[] = {
  indicator 2             : PC2
  indicator 3 (rightmost) : PC3
 
- common - PC5
+ common - PD0
 
  PORTB:
 
@@ -79,8 +79,10 @@ short read( unsigned short cycles )
     PORTC = 0x00;
     /* Clearing old values from PORTD: */
     PORTD = 0xFF;
-    /* Configure PORTD for input: */
-    DDRD = 0x00;
+    /* Configure PORTD for input, except for pin PD0: */
+    DDRD = 0x01;
+    /* Set low level on PD0: */
+    PORTD = 0xFE;
 
     /* read the values, do debouncing: */
     for( i = 0; i < cycles; i++ ) {
