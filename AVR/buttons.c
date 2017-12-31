@@ -106,11 +106,15 @@ short read( unsigned short cycles )
     return val;
 }
 
+static volatile long half_seconds;
 static volatile long seconds;
 
 ISR( TIMER1_COMPA_vect )
 {
-    seconds ++;
+    half_seconds ++;
+    if( !(half_seconds & 0x01) ) {
+	seconds ++;
+    }
     digits[3] = digit7seg[seconds % 10] & ~SEG_H;
 }
 
@@ -138,7 +142,7 @@ void display_digits(unsigned short cycles)
 
     /* Display dots: */
     PORTC = 0x10;
-    if( seconds & 0x01 ) {
+    if( half_seconds & 0x01 ) {
     	PORTD = 0x22;
     } else {
     	PORTD = 0x00;
@@ -206,9 +210,9 @@ int main(void)
     bnumbers[0] = 2; /* button 3 */
     bnumbers[1] = 3; /* button 4 */
 
-    /* Set up Timer1 for 1s at 6.400 MHz crystal: */
+    /* Set up Timer1 for 0.5s at 6.400 MHz crystal: */
     /* Number of timer pre-scaled pulses to count: */
-    OCR1A = 25000;
+    OCR1A = 25000 / 2; /* Half-second intervals. */
     /* Mode 4, CTC on OCR1A: */
     TCCR1B |= (1 << WGM12);
     /* Set interrupt on compare match: */
