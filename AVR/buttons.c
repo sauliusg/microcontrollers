@@ -65,7 +65,7 @@ static short digit7seg[] = {
  indicator 2             : PC2
  indicator 3 (rightmost) : PC3
 
- middle dots             : PC5
+ middle dots             : PC4
 
  common - PD0
 
