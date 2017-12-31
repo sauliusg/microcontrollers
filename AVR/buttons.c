@@ -54,7 +54,7 @@ static short digit7seg[] = {
  Button layout:
  PORTC:
 
- indicator 0 (leftomost) : PC0
+ indicator 0 (leftmost)  : PC0
  indicator 1             : PC1
  indicator 2             : PC2
  indicator 3 (rightmost) : PC3
