@@ -106,6 +106,8 @@ short read( unsigned short cycles )
     return val;
 }
 
+#define SECONDS_PER_24H 86400
+
 static volatile long half_seconds;
 static volatile long seconds;
 
@@ -116,8 +118,7 @@ ISR( TIMER1_COMPA_vect )
 	seconds ++;
     }
 
-    if( seconds >= 86400 ) {
-	// Number of seconds in 24 hours exceeded:
+    if( seconds >= SECONDS_PER_24H ) {
 	seconds = 0;
     }
 
@@ -180,16 +181,26 @@ void read_buttons( unsigned short read_cycles )
 	    short mask = (0x01 << i);
 	    if( (buttons & mask) < (old_buttons & mask) ) {
 		switch( j ) {
-		case 0: seconds += 36000; break;
-		case 1: seconds += 3600; break;
-		case 2: seconds += 600; break;
-		case 3: seconds += 60; break;
+		case 0: seconds += 3600; break;
+		case 1:
+		    seconds -= 3600;
+		    if( seconds < 0 ) {
+			seconds = SECONDS_PER_24H - 3600;
+		    }
+		    break;
+		case 2: seconds += 60; break;
+		case 3:
+		    seconds -= 60;
+		    if( seconds < 0 ) {
+			seconds = SECONDS_PER_24H - 60;
+		    }
+		    break;
 		}
 	    }
-	    if( seconds >= 86400 ) {
-		// Number of seconds in 24 hours exceeded:
+	    if( seconds >= SECONDS_PER_24H ) {
 		seconds = 0;
 	    }
+	    seconds = (seconds / 60) * 60;
 	}
 	old_buttons = buttons;
     }
