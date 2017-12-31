@@ -20,6 +20,12 @@ void delay_short( unsigned short count )
  B - PD5 (0x20)
  A - PD6 (0x40)
  F - PD7 (0x80)
+
+ Dot layout:
+
+ Upper dot: PD5
+ Lower dot: PD1
+
 */
 
 #define SEG_A 0x40
@@ -58,6 +64,7 @@ static short digit7seg[] = {
  indicator 1             : PC1
  indicator 2             : PC2
  indicator 3 (rightmost) : PC3
+ middle dots             : PC4
 
  common - PD0
 
@@ -122,6 +129,15 @@ void display_digits(unsigned short cycles)
 
     PORTC = 0x28;
     PORTD = digits[3];
+    delay_short( cycles );
+
+    /* Display dots: */
+    PORTC = 0x30;
+    if( seconds & 0x01 ) {
+	PORTD = 0xFF;
+    } else {
+	PORTD = 0x00;
+    }
     delay_short( cycles );
 }
 
