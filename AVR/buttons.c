@@ -111,10 +111,7 @@ static volatile long seconds;
 ISR( TIMER1_COMPA_vect )
 {
     seconds ++;
-    //digits[3] = digit7seg[seconds % 10] & ~SEG_H;
-    int segment = seconds % 9;
-    memset( digits, 0, sizeof(digits) );
-    digits[3] = 1 << segment;
+    digits[3] = digit7seg[seconds % 10] & ~SEG_H;
 }
 
 void display_digits(unsigned short cycles)
@@ -136,7 +133,7 @@ void display_digits(unsigned short cycles)
     delay_short( cycles );
 
     /* Display dots: */
-    PORTC = 0x10;
+    PORTC = 0x20;
     if( seconds & 0x01 ) {
 	PORTD = 0x22;
     } else {
