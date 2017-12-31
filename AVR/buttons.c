@@ -82,7 +82,7 @@ short read( unsigned short cycles )
     unsigned short i;
     short val = 0xFF;
 
-    /* disable all 7-seg indicators; set pin PC5 to low: */
+    /* disable all 7-seg indicators; set pins low: */
     PORTC = 0x00;
     /* Clearing old values from PORTD: */
     PORTD = 0xFF;
@@ -110,31 +110,34 @@ static volatile long seconds;
 ISR( TIMER1_COMPA_vect )
 {
     seconds ++;
-    digits[3] = digit7seg[seconds % 10] & ~SEG_H;
+    //digits[3] = digit7seg[seconds % 10] & ~SEG_H;
+    int segment = seconds % 9;
+    memset( digits, 0, sizeof(digits) );
+    digits[3] = 1 << segment;
 }
 
 void display_digits(unsigned short cycles)
 {
-    PORTC = 0x21;
+    PORTC = 0x01;
     PORTD = digits[0];
     delay_short( cycles );
 
-    PORTC = 0x22;
+    PORTC = 0x02;
     PORTD = digits[1];
     delay_short( cycles );
 
-    PORTC = 0x24;
+    PORTC = 0x04;
     PORTD = digits[2];
     delay_short( cycles );
 
-    PORTC = 0x28;
+    PORTC = 0x08;
     PORTD = digits[3];
     delay_short( cycles );
 
     /* Display dots: */
-    PORTC = 0x30;
+    PORTC = 0x10;
     if( seconds & 0x01 ) {
-	PORTD = 0xFF;
+	PORTD = 0x00;
     } else {
 	PORTD = 0x00;
     }
@@ -184,7 +187,7 @@ void read_and_display( unsigned short display_cycles,
 
 int main(void)
 {
-    DDRC |= 0x3F;
+    DDRC |= 0x1F;
     DDRD |= 0xFF;
     PORTD = 0x00;
 
