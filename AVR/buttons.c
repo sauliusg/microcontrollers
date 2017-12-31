@@ -64,7 +64,8 @@ static short digit7seg[] = {
  indicator 1             : PC1
  indicator 2             : PC2
  indicator 3 (rightmost) : PC3
- middle dots             : PC4
+
+ middle dots             : PC5
 
  common - PD0
 
@@ -137,7 +138,7 @@ void display_digits(unsigned short cycles)
     /* Display dots: */
     PORTC = 0x10;
     if( seconds & 0x01 ) {
-	PORTD = 0x00;
+	PORTD = 0x22;
     } else {
 	PORTD = 0x00;
     }
@@ -187,7 +188,7 @@ void read_and_display( unsigned short display_cycles,
 
 int main(void)
 {
-    DDRC |= 0x1F;
+    DDRC |= 0x2F;
     DDRD |= 0xFF;
     PORTD = 0x00;
 
