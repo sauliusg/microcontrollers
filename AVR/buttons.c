@@ -147,7 +147,7 @@ void display_digits(unsigned short cycles)
     } else {
     	PORTD = 0x00;
     }
-    delay_short( cycles );
+    delay_short( cycles / 6 );
     PORTD = 0;
 
     PORTC = 0;
