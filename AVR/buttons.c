@@ -137,7 +137,7 @@ void display_digits(unsigned short cycles)
     PORTD = 0;
 
     /* Display dots: */
-    PORTC = 0x20;
+    PORTC = 0x10;
     if( seconds & 0x01 ) {
     	PORTD = 0x22;
     } else {
@@ -192,7 +192,7 @@ void read_and_display( unsigned short display_cycles,
 
 int main(void)
 {
-    DDRC |= 0x2F;
+    DDRC |= 0x1F;
     DDRD |= 0xFF;
     PORTD = 0x00;
 
