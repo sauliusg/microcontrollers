@@ -184,7 +184,7 @@ void read_and_display( unsigned short display_cycles,
 
 int main(void)
 {
-    DDRC |= 0x2F;
+    DDRC |= 0x3F;
     DDRD |= 0xFF;
     PORTD = 0x00;
 
