@@ -119,27 +119,34 @@ void display_digits(unsigned short cycles)
     PORTC = 0x01;
     PORTD = digits[0];
     delay_short( cycles );
+    PORTD = 0;
 
     PORTC = 0x02;
     PORTD = digits[1];
     delay_short( cycles );
+    PORTD = 0;
 
     PORTC = 0x04;
     PORTD = digits[2];
     delay_short( cycles );
+    PORTD = 0;
 
     PORTC = 0x08;
     PORTD = digits[3];
     delay_short( cycles );
+    PORTD = 0;
 
     /* Display dots: */
     PORTC = 0x20;
     if( seconds & 0x01 ) {
-	PORTD = 0x22;
+    	PORTD = 0x22;
     } else {
-	PORTD = 0x00;
+    	PORTD = 0x00;
     }
     delay_short( cycles );
+    PORTD = 0;
+
+    PORTC = 0;
 }
 
 static short old_buttons;
