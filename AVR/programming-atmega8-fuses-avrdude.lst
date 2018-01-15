@@ -1,0 +1,8 @@
+sudo avrdude -p m8 -c stk500v1 -b 19200 -P /dev/ttyACM0 -U lfuse:r:-:h
+sudo avrdude -p m8 -c avrisp -b 19200 -P /dev/ttyACM0 -U lfuse:r:-:h
+sudo avrdude -p m8 -c avrisp -b 19200 -P /dev/ttyACM0 -U lfuse:w:0xDE:m
+sudo avrdude -p m8 -c avrisp -b 19200 -P /dev/ttyACM0 -U lfuse:r:-:h
+sudo avrdude -p m8 -c stk500v1 -b 19200 -P /dev/ttyACM0 -U lfuse:r:-:h
+sudo avrdude -p m8 -c avrisp -b 19200 -P /dev/ttyACM0 -U lfuse:r:-:h
+sudo avrdude -p m8 -c avrisp -b 19200 -P /dev/ttyACM0 -U lfuse:w:0xE1:m
+sudo avrdude -p m8 -c avrisp -b 19200 -P /dev/ttyACM0 -U lfuse:r:-:h
