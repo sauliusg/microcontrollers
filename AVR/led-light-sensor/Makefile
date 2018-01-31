@@ -1,4 +1,9 @@
-MCU=atmega8
+
+MCU=attiny25
+PART=t25
+PORT=/dev/ttyUSB0
+PROG=dasa2inv
+
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 # optimize for size:
@@ -6,6 +11,8 @@ CFLAGS=-g -mmcu=$(MCU) -Wall -Wstrict-prototypes -mcall-prologues
 
 C_FILES   = ${wildcard *.c}
 HEX_FILES = ${C_FILES:%.c=%.hex}
+
+.PHONY: all clean distclean
 
 all: ${HEX_FILES}
 
@@ -18,22 +25,23 @@ all: ${HEX_FILES}
 %.o : %.c 
 	$(CC) $(CFLAGS) -c $<
 
+.PHONY: upload read
+
 # erase the AVR before it is programmed
-load: ${HEX_FILES}
-	sudo uisp -dlpt=/dev/parport0 --erase  -dprog=dapa
-	sudo uisp -dlpt=/dev/parport0 --upload if=$< -dprog=dapa  -v=3 --hash=32
-
-load2: clock1.hex
-	sudo uisp -dlpt=/dev/parport0 --erase  -dprog=dapa
-	sudo uisp -dlpt=/dev/parport0 --upload if=$< -dprog=dapa  -v=3 --hash=32
-
-serial: clock1.hex
-	sudo uisp -dserial=/dev/ttyS0 --erase -dprog=dasa2 -dinvert=sck,mosi,miso
-	sudo uisp -dserial=/dev/ttyS0 \
-		-dprog=dasa2 \
-		-dinvert=sck,mosi,miso \
-		-v=3 --hash=32 \
-		--upload if=$<
+upload: ${HEX_FILES}
+	sudo avrdude \
+		-p ${PART} \
+		-C +dasa2inv-avrdude.conf \
+		-c ${PROG} -P ${PORT} \
+		-U flash:w:$<
+read:
+	sudo avrdude \
+		-p ${PART} \
+		-C +dasa2inv-avrdude.conf \
+		-c ${PROG} -P ${PORT} \
+		-U flash:r:-:i
 
 clean:
 	rm -f *.o *.map *.out *.hex
+
+distclean: clean
