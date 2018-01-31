@@ -9,7 +9,7 @@ Led ports:
 
 pin 2 PB3: --/\/\/\-- 
                     |
-pin 3 PB4: ---->|----
+pin 3 PB4: ----|<----
 
 */
 
@@ -26,11 +26,11 @@ void delay(unsigned long delay)
 
 void flash(short flash, short pause)
 {
-    /* LED on: */
+    /* LED off: */
     cbi(PORTB,PB3);
     sbi(PORTB,PB4);
     delay(flash);
-    /* LED off: */
+    /* LED on: */
     sbi(PORTB,PB3);
     cbi(PORTB,PB4);
     delay(pause);
@@ -40,21 +40,27 @@ int main(void)
 {
     unsigned long count;
     /* enable selected pins as an output: */
-    sbi(DDRB,PB4);
+    sbi(DDRB,PB3);
     while (1) {
-        // /* apply reverse voltage to the LED: */
-        // sbi(DDRB,PB3);  // PB3 is output
-        // sbi(PORTB,PB3); // PB3 high
-        // cbi(PORTB,PB4); // PB4 low
-        // delay(20);      // wait for a LED "capacitor" to charge.
-        // /* Read the LED voltage, wait until it falls to log. 0: */
-        // cbi(DDRB,PB3);  // PB4 is input
-        // count = 1;
-        // unsigned short led;
-        // do {
-        //     led = PINB;
-        //     count++;
-        // } while( led && 0x08 );
+        /* apply directo voltage to the LED: */
+        sbi(DDRB,PB4);  // PB4 is output
+        cbi(PORTB,PB4); // PB4 low
+        sbi(PORTB,PB3); // PB3 high
+        delay(200);
+
+        /* apply reverse voltage to the LED: */
+        sbi(PORTB,PB4); // PB4 high
+        cbi(PORTB,PB3); // PB3 low
+        delay(20);     // wait for a LED "capacitor" to charge.
+
+        /* Read the LED voltage, wait until it falls to logical 0: */
+        cbi(DDRB,PB4);  // PB4 is input
+        count = 1;
+        unsigned short led;
+        do {
+            led = PINB;
+            count++;
+        } while( led & 0x10 );
 
         // /* switch the LED "on" for a time proportional to 'count': */
         // sbi(DDRB,PB4);  // PB4 is output
@@ -63,10 +69,9 @@ int main(void)
         // delay(count);
 
         // Flash 'count' times:
-        sbi(DDRB,PB3);  // PB4 is output
-        count = 3;
+        sbi(DDRB,PB4);  // PB4 is output
         while( count > 0 ) {
-            flash(200,200);
+            flash(100,100);
             count --;
         }
         delay(400);
