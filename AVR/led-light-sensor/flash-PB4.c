@@ -42,13 +42,14 @@ int main(void)
     /* enable selected pins as an output: */
     sbi(DDRB,PB3);
     while (1) {
-        /* apply directo voltage to the LED: */
+        /* apply direct voltage to the LED: */
         sbi(DDRB,PB4);  // PB4 is output
-        cbi(PORTB,PB4); // PB4 low
-        sbi(PORTB,PB3); // PB3 high
-        delay(200);
+        sbi(PORTB,PB4);
+        cbi(PORTB,PB3);
+        delay(400);
 
         /* apply reverse voltage to the LED: */
+        sbi(DDRB,PB4);  // PB4 is output
         sbi(PORTB,PB4); // PB4 high
         cbi(PORTB,PB3); // PB3 low
         delay(20);     // wait for a LED "capacitor" to charge.
