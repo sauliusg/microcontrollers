@@ -7,46 +7,69 @@
 
 Led ports:
 
-pin 2 PB3: ---->|----
+pin 2 PB3: --/\/\/\-- 
                     |
-pin 3 PB4: --/\/\/\-- 
+pin 3 PB4: ---->|----
 
 */
 
-void delay_ms(unsigned short ms)
-/* delay for a minimum of <ms> */
-/* with a 4Mhz crystal, the resolution is 1 ms */
+void delay(unsigned long delay)
 {
-    unsigned short inner;
-
-    while ( ms ) {
-	ms--;
-	inner = 200;
-	while (inner) {
-	    inner--;
-	}
+    while ( delay ) {
+	delay--;
+        unsigned short inner = 200;
+        while( inner ) {
+            inner --;
+        }
     }
 }
 
 void flash(short flash, short pause)
 {
-    /* LED */
+    /* LED on: */
     cbi(PORTB,PB3);
     sbi(PORTB,PB4);
-    delay_ms(flash);
-    /* LED invert */
+    delay(flash);
+    /* LED off: */
     sbi(PORTB,PB3);
     cbi(PORTB,PB4);
-    delay_ms(pause);
+    delay(pause);
 }
 
 int main(void)
 {
+    unsigned long count;
     /* enable selected pins as an output: */
-    sbi(DDRB,PB3);
     sbi(DDRB,PB4);
     while (1) {
-        flash(200,200);
+        // /* apply reverse voltage to the LED: */
+        // sbi(DDRB,PB3);  // PB3 is output
+        // sbi(PORTB,PB3); // PB3 high
+        // cbi(PORTB,PB4); // PB4 low
+        // delay(20);      // wait for a LED "capacitor" to charge.
+        // /* Read the LED voltage, wait until it falls to log. 0: */
+        // cbi(DDRB,PB3);  // PB4 is input
+        // count = 1;
+        // unsigned short led;
+        // do {
+        //     led = PINB;
+        //     count++;
+        // } while( led && 0x08 );
+
+        // /* switch the LED "on" for a time proportional to 'count': */
+        // sbi(DDRB,PB4);  // PB4 is output
+        // cbi(PORTB,PB4); // PB4 low
+        // sbi(PORTB,PB3); // PB3 high
+        // delay(count);
+
+        // Flash 'count' times:
+        sbi(DDRB,PB3);  // PB4 is output
+        count = 3;
+        while( count > 0 ) {
+            flash(200,200);
+            count --;
+        }
+        delay(400);
     }
     return 0;
 }

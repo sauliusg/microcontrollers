@@ -29,7 +29,7 @@ all: ${HEX_FILES}
 
 # erase the AVR before it is programmed
 upload: ${HEX_FILES}
-	sudo avrdude \
+	sudo avrdude -V \
 		-p ${PART} \
 		-C +dasa2inv-avrdude.conf \
 		-c ${PROG} -P ${PORT} \
