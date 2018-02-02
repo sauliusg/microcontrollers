@@ -62,9 +62,10 @@ int main(void)
         } while( led & 0x10 );
 
         /* switch the LED "on" for a time proportional to 'count': */
-        sbi(PORTB,PB3); // PB3 high - LED on
-        delay(count);
-        cbi(PORTB,PB3); // PB3 low - LED off
+        // sbi(PORTB,PB3); // PB3 high - LED on
+        // delay(count);
+        // cbi(PORTB,PB3); // PB3 low - LED off
+        flash(count,count);
 
         // Flash 'count' times:
         // while( count > 0 ) {
