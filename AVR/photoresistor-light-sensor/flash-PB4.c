@@ -69,10 +69,10 @@ int main(void)
 
         // Flash 'count' times:
         while( count > 0 ) {
-            flash(80,80);
+            flash(10,10);
             count --;
         }
-        delay(400);
+        delay(200);
     }
     return 0;
 }
