@@ -46,7 +46,7 @@ int main(void)
         /* apply voltage to charge the capacitor: */
         sbi(DDRB,PB4);  // PB4 is output
         sbi(PORTB,PB4);
-        delay(400);
+        delay(10);
 
         /* Watch the capacitor discharge via the photoresitor and
            check the time of the discharge (RC time constant): */
@@ -61,18 +61,16 @@ int main(void)
             count++;
         } while( led & 0x10 );
 
-        // /* switch the LED "on" for a time proportional to 'count': */
-        // sbi(DDRB,PB4);  // PB4 is output
-        // cbi(PORTB,PB4); // PB4 low
-        // sbi(PORTB,PB3); // PB3 high
-        // delay(count);
+        /* switch the LED "on" for a time proportional to 'count': */
+        sbi(PORTB,PB3); // PB3 high - LED on
+        delay(count);
+        cbi(PORTB,PB3); // PB3 low - LED off
 
         // Flash 'count' times:
-        while( count > 0 ) {
-            flash(10,10);
-            count --;
-        }
-        delay(200);
+        // while( count > 0 ) {
+        //     flash(10,10);
+        //     count --;
+        // }
     }
     return 0;
 }
