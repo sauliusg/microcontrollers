@@ -5,12 +5,15 @@
 
 /*
 
-Led ports:
+µC ports:
 
-pin 2 PB3: --/\/\/\-- 
-                    |
-pin 3 PB4: ----|<----
+pin 2 PB3: ---/\/\/\---->|----|
 
+                       /   /
+                     |/_ |/_
+pin 3 PB4: -o------/\/\/\------|
+            |
+             --------||--------|
 */
 
 void delay(unsigned long delay)
@@ -26,13 +29,11 @@ void delay(unsigned long delay)
 
 void flash(short flash, short pause)
 {
-    /* LED off: */
-    cbi(PORTB,PB3);
-    sbi(PORTB,PB4);
-    delay(flash);
     /* LED on: */
     sbi(PORTB,PB3);
-    cbi(PORTB,PB4);
+    delay(flash);
+    /* LED off: */
+    cbi(PORTB,PB3);
     delay(pause);
 }
 
@@ -40,19 +41,16 @@ int main(void)
 {
     unsigned long count;
     /* enable selected pins as an output: */
-    sbi(DDRB,PB3);
+    sbi(DDRB,PB3); // PB3 is output
     while (1) {
-        /* apply direct voltage to the LED: */
+        /* apply voltage to charge the capacitor: */
         sbi(DDRB,PB4);  // PB4 is output
         sbi(PORTB,PB4);
-        cbi(PORTB,PB3);
         delay(400);
 
-        /* apply reverse voltage to the LED: */
-        sbi(DDRB,PB4);  // PB4 is output
-        sbi(PORTB,PB4); // PB4 high
-        cbi(PORTB,PB3); // PB3 low
-        delay(20);     // wait for a LED "capacitor" to charge.
+        /* Watch the capacitor discharge via the photoresitor and
+           check the time of the discharge (RC time constant): */
+        cbi(DDRB,PB4);  // PB4 is input
 
         /* Read the LED voltage, wait until it falls to logical 0: */
         cbi(DDRB,PB4);  // PB4 is input
@@ -70,9 +68,8 @@ int main(void)
         // delay(count);
 
         // Flash 'count' times:
-        sbi(DDRB,PB4);  // PB4 is output
         while( count > 0 ) {
-            flash(100,100);
+            flash(80,80);
             count --;
         }
         delay(400);
