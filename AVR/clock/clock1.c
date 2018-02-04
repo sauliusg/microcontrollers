@@ -311,6 +311,10 @@ int main(void)
         } else {
             display_cycles = MIN_DISPLAY_CYCLES;
         }
+        digits[3] = digit7seg[ display_cycles % 10 ];
+        digits[2] = digit7seg[ (display_cycles/10) % 10 ];
+        digits[1] = digit7seg[ (display_cycles/100) % 10 ];
+        digits[0] = digit7seg[ (display_cycles/1000) % 10 ];
 	read_and_display( /* display_cycles = */ display_cycles,
 			  /* read_cycles = */ 127 );
     }
