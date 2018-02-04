@@ -151,7 +151,7 @@ ISR( TIMER1_COMPA_vect )
 /* Ambiaent light measurement: */
 
 #define MAX_CAPACITOR_CHARGE_COUNT    10
-#define MAX_CAPACITOR_DISCHARGE_COUNT 240
+#define MAX_CAPACITOR_DISCHARGE_COUNT 200
 
 #define CAPACITOR_STATE_CHARGE 0x01
 #define LED_STATE_ON           0x02
