@@ -9,7 +9,7 @@ OBJCOPY=avr-objcopy
 # optimize for size:
 CFLAGS=-g -mmcu=$(MCU) -Wall -Wstrict-prototypes -mcall-prologues
 
-C_FILES   = ${wildcard *.c}
+C_FILES   = $(sort ${wildcard *.c})
 HEX_FILES = ${C_FILES:%.c=%.hex}
 
 .PHONY: all clean distclean
