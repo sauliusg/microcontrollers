@@ -1,12 +1,27 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#define sbi(REGISTER,BIT) REGISTER |= (1 << BIT);    /* sets BIT in REGISTER */
+#define cbi(REGISTER,BIT) REGISTER &= ~(1 << BIT);   /* clears BIT in REGISTER */
+
 static volatile short digits[4];
 
 void delay_short( unsigned short count )
 {
     while( count-- > 0 );
 }
+
+/*
+  Photoresistor to sense ambient light, so that the clock display can
+  be dimmed in the dark:
+
+                       /   /
+                     |/_ |/_
+pin 15 PB1: -o------/\/\/\------|
+             |
+             ---------||--------|
+
+*/
 
 /*
  Segment layout:
@@ -133,6 +148,49 @@ ISR( TIMER1_COMPA_vect )
     digits[0] = digit7seg[ hours / 10 ];
 }
 
+/* Ambiaent light measurement: */
+
+#define MAX_CAPACITOR_CHARGE_COUNT    10
+#define MAX_CAPACITOR_DISCHARGE_COUNT 240
+
+#define CAPACITOR_STATE_CHARGE 0x01
+#define LED_STATE_ON           0x02
+
+unsigned short state;
+
+unsigned short ambient_light( void )
+{
+    static unsigned short capacitor_discharge_count = 0;
+    static unsigned short prev_capacitor_discharge_count = 0;
+    static unsigned short capacitor_charge_count = 0;
+
+    if( state & CAPACITOR_STATE_CHARGE ) {
+        capacitor_charge_count ++;
+        if( capacitor_charge_count >= MAX_CAPACITOR_CHARGE_COUNT ) {
+            state &= ~CAPACITOR_STATE_CHARGE;
+            cbi(DDRB,PB1); // pin is input
+            capacitor_discharge_count = 0;
+        }
+    } else {
+        unsigned short led = PINB;
+        if( led & 0x02 ) {
+            // Not yet discharged:
+            capacitor_discharge_count ++;
+        }
+        if( !(led & 0x02) ||
+            capacitor_discharge_count > MAX_CAPACITOR_DISCHARGE_COUNT ) {
+            // Discharged, or reached maximum count:
+            state |= CAPACITOR_STATE_CHARGE;
+            sbi(DDRB,PB1); // pin is output
+            sbi(PORTB,PB1);
+            capacitor_charge_count = 0;
+            prev_capacitor_discharge_count = capacitor_discharge_count;
+        }
+    }
+    return prev_capacitor_discharge_count;
+}
+
+
 void display_digits(unsigned short cycles)
 {
     PORTC = 0x01;
@@ -170,6 +228,9 @@ void display_digits(unsigned short cycles)
 
 static short old_buttons;
 static short bnumbers[4]; /* Button position numbers */
+
+#define MIN_DISPLAY_CYCLES 20
+#define MAX_DISPLAY_CYCLES 200
 
 void read_buttons( unsigned short read_cycles )
 {
@@ -243,7 +304,14 @@ int main(void)
     sei();
 
     while (1) {
-	read_and_display( /* display_cycles = */ 200,
+        unsigned short display_cycles;
+        unsigned short ambient_counts = ambient_light();
+        if( ambient_counts < MAX_DISPLAY_CYCLES - MIN_DISPLAY_CYCLES ) {
+            display_cycles = MAX_DISPLAY_CYCLES - ambient_counts;
+        } else {
+            display_cycles = MIN_DISPLAY_CYCLES;
+        }
+	read_and_display( /* display_cycles = */ display_cycles,
 			  /* read_cycles = */ 127 );
     }
 }
