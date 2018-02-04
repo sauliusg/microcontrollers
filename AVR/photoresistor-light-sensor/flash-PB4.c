@@ -27,6 +27,8 @@ void delay(unsigned long delay)
     }
 }
 
+#define MAX_COUNT 24000
+
 void flash(short flash, short pause)
 {
     /* LED on: */
@@ -59,7 +61,7 @@ int main(void)
         do {
             led = PINB;
             count++;
-        } while( led & 0x10 );
+        } while( (led & 0x10) && count < MAX_COUNT );
 
         /* switch the LED "on" for a time proportional to 'count': */
         // sbi(PORTB,PB3); // PB3 high - LED on
