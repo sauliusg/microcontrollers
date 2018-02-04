@@ -17,7 +17,7 @@ pin 3 PB4: -o------/\/\/\------|
 */
 
 #define MAX_CAPACITOR_CHARGE_COUNT    10
-#define MAX_CAPACITOR_DISCHARGE_COUNT 2400
+#define MAX_CAPACITOR_DISCHARGE_COUNT 240
 
 #define MAX_LED_COUNT 240
 
@@ -30,6 +30,7 @@ int main(void)
 {
     unsigned long led_on_count = 0, led_count = 0;
     unsigned long capacitor_discharge_count = 0;
+    unsigned long prev_capacitor_discharge_count = 0;
     unsigned short capacitor_charge_count = 0;
     /* enable selected pins as an output: */
     sbi(DDRB,PB3); // PB3 is output
@@ -54,7 +55,7 @@ int main(void)
                 sbi(DDRB,PB4);  // PB4 is output
                 sbi(PORTB,PB4);
                 capacitor_charge_count = 0;
-                led_on_count = capacitor_discharge_count / 10;
+                prev_capacitor_discharge_count = capacitor_discharge_count;
             }
         }
 
@@ -68,7 +69,12 @@ int main(void)
         if( led_count >= MAX_LED_COUNT ) {
             led_count = 0;
             sbi( PORTB, PB3 ); // LED on
-            state |= LED_STATE_ON;            
+            state |= LED_STATE_ON;
+            if( prev_capacitor_discharge_count < MAX_LED_COUNT ) {
+                led_on_count = MAX_LED_COUNT - prev_capacitor_discharge_count;
+            } else {
+                led_on_count = 0;
+            }
         }
 
     }
