@@ -20,7 +20,7 @@ pin 3 PB4: -o------/\/\/\------|
 #define MAX_CAPACITOR_DISCHARGE_COUNT 240
 
 #define MAX_LED_COUNT    240
-#define DIMMER_THRESHOLD 10
+#define DIMMER_THRESHOLD 20
 
 #define CAPACITOR_STATE_CHARGE 0x01
 #define LED_STATE_ON           0x02
