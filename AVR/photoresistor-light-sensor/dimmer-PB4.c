@@ -19,7 +19,8 @@ pin 3 PB4: -o------/\/\/\------|
 #define MAX_CAPACITOR_CHARGE_COUNT    10
 #define MAX_CAPACITOR_DISCHARGE_COUNT 240
 
-#define MAX_LED_COUNT 240
+#define MAX_LED_COUNT    240
+#define DIMMER_THRESHOLD 10
 
 #define CAPACITOR_STATE_CHARGE 0x01
 #define LED_STATE_ON           0x02
@@ -70,10 +71,11 @@ int main(void)
             led_count = 0;
             sbi( PORTB, PB3 ); // LED on
             state |= LED_STATE_ON;
-            if( prev_capacitor_discharge_count < MAX_LED_COUNT ) {
+            if( prev_capacitor_discharge_count <
+                MAX_LED_COUNT - DIMMER_THRESHOLD ) {
                 led_on_count = MAX_LED_COUNT - prev_capacitor_discharge_count;
             } else {
-                led_on_count = 0;
+                led_on_count = DIMMER_THRESHOLD;
             }
         }
 
