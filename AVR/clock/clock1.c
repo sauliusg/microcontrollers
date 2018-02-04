@@ -229,7 +229,7 @@ void display_digits(unsigned short cycles)
 static short old_buttons;
 static short bnumbers[4]; /* Button position numbers */
 
-#define MIN_DISPLAY_CYCLES 20
+#define MIN_DISPLAY_CYCLES 10
 #define MAX_DISPLAY_CYCLES 200
 
 void read_buttons( unsigned short read_cycles )
