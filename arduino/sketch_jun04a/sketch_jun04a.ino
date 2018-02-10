@@ -9,15 +9,15 @@ void setup()
 void loop()
 {
   digitalWrite( outputPinNo, HIGH );
-  delay( 3000 ); // delay for 3 s
+  delay( 300 ); // delay for 3 s
   digitalWrite( outputPinNo, LOW );
-  delay( 500 );
+  delay( 100 );
   digitalWrite( outputPinNo, HIGH );
-  delay( 3000 ); // delay for 3 s
+  delay( 300 ); // delay for 3 s
   digitalWrite( outputPinNo, LOW );
-  delay( 500 );
+  delay( 100 );
   digitalWrite( outputPinNo, HIGH );
-  delay( 3000 ); // delay for 3 s
+  delay( 300 ); // delay for 3 s
   digitalWrite( outputPinNo, LOW );
-  delay( 6000 );
+  delay( 600 );
 }
