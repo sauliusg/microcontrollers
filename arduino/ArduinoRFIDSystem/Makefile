@@ -2,7 +2,7 @@ MCU=atmega328
 CC=avr-gcc
 CPP=avr-g++
 OBJCOPY=avr-objcopy
-INC=-I ../libraries/RFID -I /usr/share/arduino/hardware/arduino/cores/arduino -I /usr/share/arduino/hardware/arduino/variants/mega -I /usr/share/arduino/libraries/SPI -I /usr/share/arduino/libraries/Wire
+INC=-I ../libraries/RFID -I /usr/share/arduino/hardware/arduino/cores/arduino -I /usr/share/arduino/hardware/arduino/variants/standard -I /usr/share/arduino/libraries/SPI -I /usr/share/arduino/libraries/Wire
 # optimize for size:
 CPPFLAGS=-g -mmcu=$(MCU) -mcall-prologues -Os -fno-exceptions -ffunction-sections -fdata-sections -DARDUINO=105 -DF_CPU=16000000L ${INC}
 CFLAGS=${CPPFLAGS} -Wstrict-prototypes
@@ -61,4 +61,5 @@ clean:
 distclean cleanAll: clean
 	rm -f ${HEX_FILES}
 	rm -f libarduino.a
+	rm -f liblocal.a
 
