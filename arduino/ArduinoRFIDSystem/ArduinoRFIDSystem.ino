@@ -23,8 +23,7 @@ int led = 7;
 int power = 8; 
 int serNum[5];
 int cards[][5] = {
-  {144, 66, 100, 77, 251}
-  
+  {144, 66, 100, 77, 251}  
 };
 
 bool access = false;
