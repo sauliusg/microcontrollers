@@ -7,10 +7,10 @@ INC=-I ../libraries/RFID -I /usr/share/arduino/hardware/arduino/cores/arduino -I
 CPPFLAGS=-g -mmcu=$(MCU) -mcall-prologues -Os -fno-exceptions -ffunction-sections -fdata-sections -DARDUINO=105 -DF_CPU=16000000L ${INC}
 CFLAGS=${CPPFLAGS} -Wstrict-prototypes
 
-ARDUINO_DIR = /usr/share/arduino/hardware/arduino/cores/arduino
-ARDUINO_CPP = $(wildcard ${ARDUINO_DIR}/*.cpp)
-ARDUINO_C   = $(wildcard ${ARDUINO_DIR}/*.c)
-ARDUINO_OBJ = ${ARDUINO_CPP:${ARDUINO_DIR}/%.cpp=%.o} ${ARDUINO_C:${ARDUINO_DIR}/%.c=%.o}
+ARDUINO_DIR = /usr/share/arduino/hardware/arduino/cores/arduino /usr/share/arduino/libraries/SPI
+ARDUINO_CPP = $(wildcard $(addsuffix /*.cpp,${ARDUINO_DIR}))
+ARDUINO_C   = $(wildcard $(addsuffix /*.c,${ARDUINO_DIR}))
+ARDUINO_OBJ = $(notdir ${ARDUINO_CPP:%.cpp=%.o}) $(notdir ${ARDUINO_C:%.c=%.o})
 
 LIB_DIR  = ../libraries
 LIB_CPP  = $(filter-out ${LIB_DIR}/RC522/%,$(shell find ${LIB_DIR} -name '*.cpp'))
@@ -56,6 +56,7 @@ liblocal.a: ${LIB_OBJ}
 
 clean:
 	rm -f ${OBJ_FILES}
+	rm -f ${LIB_OBJ}
 	rm -f ${ARDUINO_OBJ}
 
 distclean cleanAll: clean
