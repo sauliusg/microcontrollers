@@ -24,7 +24,7 @@ C_FILES   = ${wildcard *.ino}
 HEX_FILES = ${C_FILES:%.ino=%.hex}
 OBJ_FILES = ${C_FILES:%.ino=%.o} ${CPP_OBJ}
 
-.PHONY: all clean distclean cleanAll
+.PHONY: all clean distclean cleanAll upload
 
 all: ${HEX_FILES}
 
@@ -53,6 +53,9 @@ libarduino.a: ${ARDUINO_OBJ}
 
 liblocal.a: ${LIB_OBJ}
 	ar r $@ $^
+
+upload:
+	avrdude -c arduino -p atmega328p -P /dev/ttyUSB3 -b57600 -U flash:w:${HEX_FILES}
 
 clean:
 	rm -f ${OBJ_FILES}
