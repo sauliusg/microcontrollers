@@ -1,13 +1,33 @@
-MCU=atmega328
+# --*- Makefile -*--
+
+# A Mafile to compile an Arduino .ino file and to upload it to an
+# Arduino computer via USB using its bootloader.
+
+MCU=atmega328p
+PART=${MCU}
+PORT=/dev/ttyUSB0
+# UART speed for the upload with 'avrdude':
+SPEED=57600
+
 CC=avr-gcc
 CPP=avr-g++
 OBJCOPY=avr-objcopy
-INC=-I ../libraries/RFID -I /usr/share/arduino/hardware/arduino/cores/arduino -I /usr/share/arduino/hardware/arduino/variants/standard -I /usr/share/arduino/libraries/SPI -I /usr/share/arduino/libraries/Wire
+
+INC=\
+-I ../libraries/RFID \
+-I /usr/share/arduino/hardware/arduino/cores/arduino \
+-I /usr/share/arduino/hardware/arduino/variants/standard \
+-I /usr/share/arduino/libraries/SPI \
+-I /usr/share/arduino/libraries/Wire
+
 # optimize for size:
-CPPFLAGS=-g -mmcu=$(MCU) -mcall-prologues -Os -fno-exceptions -ffunction-sections -fdata-sections -DARDUINO=105 -DF_CPU=16000000L ${INC}
+CPPFLAGS=-g -mmcu=${MCU} -mcall-prologues -Os -fno-exceptions -ffunction-sections \
+	-fdata-sections -DARDUINO=105 -DF_CPU=16000000L ${INC}
+
 CFLAGS=${CPPFLAGS} -Wstrict-prototypes
 
-ARDUINO_DIR = /usr/share/arduino/hardware/arduino/cores/arduino /usr/share/arduino/libraries/SPI
+ARDUINO_DIR = /usr/share/arduino/hardware/arduino/cores/arduino \
+	/usr/share/arduino/libraries/SPI
 ARDUINO_CPP = $(wildcard $(addsuffix /*.cpp,${ARDUINO_DIR}))
 ARDUINO_C   = $(wildcard $(addsuffix /*.c,${ARDUINO_DIR}))
 ARDUINO_OBJ = $(notdir ${ARDUINO_CPP:%.cpp=%.o}) $(notdir ${ARDUINO_C:%.c=%.o})
@@ -54,8 +74,9 @@ libarduino.a: ${ARDUINO_OBJ}
 liblocal.a: ${LIB_OBJ}
 	ar r $@ $^
 
-upload:
-	avrdude -c arduino -p atmega328p -P /dev/ttyUSB3 -b57600 -U flash:w:${HEX_FILES}
+upload: ${HEX_FILES}
+	avrdude -c arduino -p ${PART} -P ${PORT} -b${SPEED} \
+		-U flash:w:${HEX_FILES}
 
 clean:
 	rm -f ${OBJ_FILES}
