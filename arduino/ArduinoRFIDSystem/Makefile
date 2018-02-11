@@ -75,6 +75,14 @@ endif
 display:
 	echo ${LIB_CPP}
 
+# Create local makefiles (which should be ignored by your vrsion
+# control) from *.example files checked out from the repository. They
+# will only be created if they are missing; after that they can be
+# customised locally, and the Makefile commands will not touch them:
+Make%: Make%.example
+	test -f $@ || cp $< $@
+	touch $@
+
 %.hex : %.out
 	$(OBJCOPY) -R .eeprom -O ihex $< $@
 
