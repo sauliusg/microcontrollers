@@ -3,9 +3,19 @@
 # A Makefile to compile an Arduino .ino file and to upload it to an
 # Arduino computer via USB using its bootloader.
 
-MCU=atmega328p
-PART=${MCU}
-PORT=/dev/ttyUSB0
+MAKECONF_EXAMPLE   = $(wildcard Makeconf*.example)
+GENERATED_MAKECONF = ${MAKECONF_EXAMPLE:%.example=%}
+
+LOCAL_MAKECONF_FILES = $(filter-out %.example,${filter-out %~, ${wildcard Makeconf*}})
+
+MAKECONF_FILES = $(sort ${LOCAL_MAKECONF_FILES} ${GENERATED_MAKECONF})
+
+ifneq ("${MAKECONF_FILES}","")
+include ${MAKECONF_FILES}
+endif
+
+#------------------------------------------------------------------------------
+
 # UART speed for the upload with 'avrdude':
 SPEED=57600
 
@@ -44,9 +54,21 @@ C_FILES   = ${wildcard *.ino}
 HEX_FILES = ${C_FILES:%.ino=%.hex}
 OBJ_FILES = ${C_FILES:%.ino=%.o} ${CPP_OBJ}
 
+#------------------------------------------------------------------------------
+
 .PHONY: all clean distclean cleanAll upload
 
 all: ${HEX_FILES}
+
+#------------------------------------------------------------------------------
+
+MAKELOCAL_FILES = ${filter-out %~, ${wildcard Makelocal*}}
+
+ifneq ("${MAKELOCAL_FILES}","")
+include ${MAKELOCAL_FILES}
+endif
+
+#------------------------------------------------------------------------------
 
 .PHONY: display
 

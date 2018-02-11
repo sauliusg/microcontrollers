@@ -1,0 +1,5 @@
+# --*- Makefile -*--
+
+MCU=atmega328p
+PART=${MCU}
+PORT=/dev/ttyUSB0

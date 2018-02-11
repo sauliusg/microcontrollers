@@ -1,0 +1,5 @@
+# --*- Makefile -*--
+
+Make%: Make%.example
+	test -f $@ || cp $< $@
+	touch $@
