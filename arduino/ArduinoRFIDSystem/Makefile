@@ -1,6 +1,6 @@
 # --*- Makefile -*--
 
-# A Mafile to compile an Arduino .ino file and to upload it to an
+# A Makefile to compile an Arduino .ino file and to upload it to an
 # Arduino computer via USB using its bootloader.
 
 MCU=atmega328p
