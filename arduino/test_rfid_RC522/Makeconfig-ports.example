@@ -7,6 +7,7 @@ PORT=/dev/ttyUSB0
 # Include files necessary to compile the Arduino project:
 
 INC=\
+-I ../libraries/RFID \
 -I ../libraries/RC522 \
 -I /usr/share/arduino/hardware/arduino/cores/arduino \
 -I /usr/share/arduino/hardware/arduino/variants/standard \
