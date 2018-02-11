@@ -1,0 +1,3 @@
+# --*- Makefile -*--
+
+LOCAL_CPP_FLAGS=-std=c++11

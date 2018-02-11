@@ -23,7 +23,7 @@ CC=avr-gcc
 CPP=avr-g++
 OBJCOPY=avr-objcopy
 
-INC=\
+INC ?=\
 -I ../libraries/RFID \
 -I /usr/share/arduino/hardware/arduino/cores/arduino \
 -I /usr/share/arduino/hardware/arduino/variants/standard \
@@ -31,18 +31,20 @@ INC=\
 -I /usr/share/arduino/libraries/Wire
 
 # optimize for size:
-CPPFLAGS=-g -mmcu=${MCU} -mcall-prologues -Os -fno-exceptions -ffunction-sections \
+COMMON_CFLAGS = -g -mmcu=${MCU} -mcall-prologues -Os -fno-exceptions -ffunction-sections \
 	-fdata-sections -DARDUINO=105 -DF_CPU=16000000L ${INC}
 
-CFLAGS=${CPPFLAGS} -Wstrict-prototypes
+CPPFLAGS=${COMMON_CFLAGS} ${LOCAL_CPP_FLAGS}
 
-ARDUINO_DIR = /usr/share/arduino/hardware/arduino/cores/arduino \
+CFLAGS=${COMMON_CFLAGS} -Wstrict-prototypes ${LOCAL_C_FLAGS}
+
+ARDUINO_DIR ?= /usr/share/arduino/hardware/arduino/cores/arduino \
 	/usr/share/arduino/libraries/SPI
 ARDUINO_CPP = $(wildcard $(addsuffix /*.cpp,${ARDUINO_DIR}))
 ARDUINO_C   = $(wildcard $(addsuffix /*.c,${ARDUINO_DIR}))
 ARDUINO_OBJ = $(notdir ${ARDUINO_CPP:%.cpp=%.o}) $(notdir ${ARDUINO_C:%.c=%.o})
 
-LIB_DIR  = ../libraries
+LIB_DIR  ?= ../libraries
 LIB_CPP  = $(filter-out ${LIB_DIR}/RC522/%,$(shell find ${LIB_DIR} -name '*.cpp'))
 LIB_OBJ  = $(notdir ${LIB_CPP:%.cpp=%.o})
 LIB_DIRS = $(sort $(dir ${LIB_CPP}))
