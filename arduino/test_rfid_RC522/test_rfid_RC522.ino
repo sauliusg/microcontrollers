@@ -36,6 +36,11 @@
 #define RST_PIN 9
 MFRC522 mfrc522(SS_PIN, RST_PIN);	// Create MFRC522 instance.
 
+/**
+ * Helper routine to dump a byte array as hex values to Serial.
+ */
+void dump_byte_array(byte *buffer, byte bufferSize);
+
 void setup() {
 	Serial.begin(9600);	// Initialize serial communications with the PC
 	SPI.begin();			// Init SPI bus
@@ -55,5 +60,31 @@ void loop() {
 	}
 
 	// Dump debug info about the card. PICC_HaltA() is automatically called.
-	mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
+	// mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
+
+        // Example from
+        // https://github.com/miguelbalboa/rfid/blob/master/examples/ReadAndWrite/ReadAndWrite.ino#L130/
+        // Read a block:
+        byte buffer[18];
+        byte size = sizeof(buffer);
+        byte blockAddr = 4;
+        MFRC522::StatusCode status = (MFRC522::StatusCode) mfrc522.MIFARE_Read(blockAddr, buffer, &size);
+        if (status != MFRC522::STATUS_OK) {
+            Serial.print(F("MIFARE_Read() failed: "));
+            Serial.println(mfrc522.GetStatusCodeName(status));
+        }
+        Serial.print(F("Data in block ")); Serial.print(blockAddr); Serial.println(F(":"));
+        dump_byte_array(buffer, 16); Serial.println();
+        mfrc522.PICC_HaltA();
+}
+
+/**
+ * Helper routine to dump a byte array as hex values to Serial.
+ */
+void dump_byte_array(byte *buffer, byte bufferSize)
+{
+    for (byte i = 0; i < bufferSize; i++) {
+        Serial.print(buffer[i] < 0x10 ? " 0" : " ");
+        Serial.print(buffer[i], HEX);
+    }
 }
