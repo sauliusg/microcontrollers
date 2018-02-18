@@ -43,7 +43,6 @@ void setup(){
 void loop(){
     
     if(rfid.isCard()){
-    
         if(rfid.readCardSerial()){
             Serial.print(rfid.serNum[0]);
             Serial.print(" ");
@@ -55,43 +54,53 @@ void loop(){
             Serial.print(" ");
             Serial.print(rfid.serNum[4]);
             Serial.println("");
-            
-            for(int x = 0; x < sizeof(cards); x++){
-              for(int i = 0; i < sizeof(rfid.serNum); i++ ){
-                  if(rfid.serNum[i] != cards[x][i]) {
-                      access = false;
-                      break;
-                  } else {
-                      access = true;
-                  }
-              }
-              if(access) break;
-            }
-           
         }
-        
-       if(access){
-          Serial.println("Welcome!");
-           digitalWrite(led, HIGH); 
-           delay(1000);
-           digitalWrite(led, LOW);
-           digitalWrite(power, HIGH);
-           delay(1000);
-           digitalWrite(power, LOW);
-           
-      } else {
-           Serial.println("Not allowed!"); 
-           digitalWrite(led, HIGH);
-           delay(500);
-           digitalWrite(led, LOW); 
-           delay(500);
-           digitalWrite(led, HIGH);
-           delay(500);
-           digitalWrite(led, LOW);         
-       }        
+        Serial.println("Trying to authenticate block 4 with default KEYA value");
+        uint8_t keya[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+	  
+        // Start with block 4 (the first block of sector 1) since sector 0
+        // contains the manufacturer data and it's probably better just
+        // to leave it alone unless you know what you're doing
+        //success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, 4, 0, keya);
+        int success;
+        unsigned char authMode = 0x60;
+        int blockNr = 8;
+        success = rfid.auth(/*authMode =*/authMode, /*BlockAddr =*/blockNr,
+                            /*Sectorkey =*/keya, /*serNum =*/rfid.serNum);
+
+        if( success == MI_OK ) {
+            Serial.print( "Authenticated with authMode = " );
+            Serial.println( authMode );
+        } else {
+            Serial.print( "Card authentication failed: code = " );
+            Serial.println( success );
+        }
+
+        for( int i = blockNr; i < blockNr + 4; i ++ ) {
+            unsigned char buffer[MAX_LEN*16];
+            int errcode;
+            memset( buffer, 0, sizeof(buffer));
+            if( (errcode = rfid.read( i, buffer )) == MI_OK ) {
+                Serial.println( "Read OK" );
+            } else {
+                Serial.print( "Read faled? Code = " );
+                Serial.println( errcode );
+            }
+
+            for( int j = 0; j < MAX_LEN; j++ ) {
+                char number[4];
+                snprintf( number, sizeof(number), "%02X ", buffer[j] );
+                Serial.print( number );
+            }
+            for( int j = 0; j < MAX_LEN; j++ ) {
+                char characters[4];
+                snprintf( characters, sizeof(characters), "%c ", buffer[j] );
+                Serial.print( characters );
+            }
+            Serial.println();
+        }
+        Serial.println( ">>>>" );
     }
-    
-    
     
     rfid.halt();
 

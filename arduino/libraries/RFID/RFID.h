@@ -117,34 +117,34 @@
 
 class RFID
 {
-  public:
+ public:
     RFID(int chipSelectPin, int NRSTPD);
 	
-	bool isCard();
-	bool readCardSerial();
+    bool isCard();
+    bool readCardSerial();
 	
     void init();
-	void reset();
-	void writeMFRC522(unsigned char addr, unsigned char val);
-	void antennaOn(void);
-	unsigned char readMFRC522(unsigned char addr);
-	void setBitMask(unsigned char reg, unsigned char mask);
-	void clearBitMask(unsigned char reg, unsigned char mask);
-	void calculateCRC(unsigned char *pIndata, unsigned char len, unsigned char *pOutData);
-	unsigned char MFRC522Request(unsigned char reqMode, unsigned char *TagType);
-	unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsigned char sendLen, unsigned char *backData, unsigned int *backLen);
-	unsigned char anticoll(unsigned char *serNum);
-	unsigned char auth(unsigned char authMode, unsigned char BlockAddr, unsigned char *Sectorkey, unsigned char *serNum);
-	unsigned char read(unsigned char blockAddr, unsigned char *recvData);
-	unsigned char write(unsigned char blockAddr, unsigned char *writeData);
-	void halt();
+    void reset();
+    void writeMFRC522(unsigned char addr, unsigned char val);
+    void antennaOn(void);
+    unsigned char readMFRC522(unsigned char addr);
+    void setBitMask(unsigned char reg, unsigned char mask);
+    void clearBitMask(unsigned char reg, unsigned char mask);
+    void calculateCRC(unsigned char *pIndata, unsigned char len, unsigned char *pOutData);
+    unsigned char MFRC522Request(unsigned char reqMode, unsigned char *TagType);
+    unsigned char MFRC522ToCard(unsigned char command, unsigned char *sendData, unsigned char sendLen, unsigned char *backData, unsigned int *backLen);
+    unsigned char anticoll(unsigned char *serNum);
+    unsigned char auth(unsigned char authMode, unsigned char BlockAddr, unsigned char *Sectorkey, unsigned char *serNum);
+    unsigned char read(unsigned char blockAddr, unsigned char *recvData);
+    unsigned char write(unsigned char blockAddr, unsigned char *writeData);
+    void halt();
 	
-	unsigned char serNum[5];       // Constante para guardar el numero de serie leido.
-	unsigned char AserNum[5];      // Constante para guardar el numero d serie de la secion actual.
+    unsigned char serNum[5];       // Constante para guardar el numero de serie leido.
+    unsigned char AserNum[5];      // Constante para guardar el numero d serie de la secion actual.
 	
-  private:
+ private:
     int _chipSelectPin;
-	int _NRSTPD;
+    int _NRSTPD;
 	
 };
 
