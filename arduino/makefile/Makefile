@@ -45,9 +45,9 @@ ARDUINO_C   = $(wildcard $(addsuffix /*.c,${ARDUINO_DIR}))
 ARDUINO_OBJ = $(notdir ${ARDUINO_CPP:%.cpp=%.o}) $(notdir ${ARDUINO_C:%.c=%.o})
 
 LIB_DIR  ?= ../libraries
-LIB_CPP  = $(filter-out ${LIB_DIR}/RC522/%,$(shell find ${LIB_DIR} -name '*.cpp'))
-LIB_OBJ  = $(notdir ${LIB_CPP:%.cpp=%.o})
-LIB_DIRS = $(sort $(dir ${LIB_CPP}))
+LIB_CPP  ?= $(filter-out ${LIB_DIR}/RC522/%,$(shell find ${LIB_DIR} -name '*.cpp'))
+LIB_OBJ  ?= $(notdir ${LIB_CPP:%.cpp=%.o})
+LIB_DIRS ?= $(sort $(dir ${LIB_CPP}))
 
 vpath %.cpp ${LIB_DIRS} ${ARDUINO_DIR}
 vpath %.c ${ARDUINO_DIR}

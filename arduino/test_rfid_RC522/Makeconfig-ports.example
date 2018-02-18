@@ -2,26 +2,28 @@
 
 MCU=atmega328p
 PART=${MCU}
-PORT=/dev/ttyUSB0
+PORT=/dev/ttyUSB3
 
 # Include files necessary to compile the Arduino project:
 
-INC=\
--I ../libraries/RFID \
--I ../libraries/RC522 \
--I /usr/share/arduino/hardware/arduino/cores/arduino \
--I /usr/share/arduino/hardware/arduino/variants/standard \
--I /usr/share/arduino/libraries/SPI \
--I /usr/share/arduino/libraries/Wire
+## ARDUINO = /usr/share/arduino
+ARDUINO = /home/saulius/install/arduino/arduino-1.8.5
 
-ARDUINO_DIR = /usr/share/arduino/hardware/arduino/cores/arduino \
-	/usr/share/arduino/libraries/SPI
+INC=\
+-I ../libraries/RC522 \
+-I ${ARDUINO}/hardware/arduino/avr/cores/arduino \
+-I ${ARDUINO}/hardware/arduino/avr/variants/standard \
+-I ${ARDUINO}/hardware/arduino/avr/libraries/SPI/src \
+-I ${ARDUINO}/hardware/arduino/avr/libraries/Wire/src
+
+ARDUINO_DIR = ${ARDUINO}/hardware/arduino/avr/cores/arduino \
+	${ARDUINO}/hardware/arduino/avr/libraries/SPI/src \
+	${ARDUINO}/hardware/arduino/avr/libraries/Wire/src
 ARDUINO_CPP = $(wildcard $(addsuffix /*.cpp,${ARDUINO_DIR}))
 ARDUINO_C   = $(wildcard $(addsuffix /*.c,${ARDUINO_DIR}))
 ARDUINO_OBJ = $(notdir ${ARDUINO_CPP:%.cpp=%.o}) $(notdir ${ARDUINO_C:%.c=%.o})
 
 LIB_DIR  = ../libraries
-LIB_CPP  = $(shell find ${LIB_DIR} -name '*.cpp')
+LIB_CPP  = $(filter-out ${LIB_DIR}/RFID/%,$(shell find ${LIB_DIR} -name '*.cpp'))
 LIB_OBJ  = $(notdir ${LIB_CPP:%.cpp=%.o})
 LIB_DIRS = $(sort $(dir ${LIB_CPP}))
-
