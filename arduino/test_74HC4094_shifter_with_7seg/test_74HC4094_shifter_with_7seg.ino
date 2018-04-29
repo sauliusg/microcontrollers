@@ -32,14 +32,10 @@ void loop()
   digitalWrite( OE, HIGH );
   for( int i = 0; i < sizeof(pattern)/sizeof(pattern[0]); i ++ ) {
     // Output a pattern bit into the shifter:
-    if( count % 2 == 0 ) {
-        digitalWrite( D, (pattern[i] == ((count % 4)>>1)) ? LOW : HIGH );
-        Serial.print( count );
-        Serial.print( " " );
-        Serial.println( (count%4)>>1 );
-    } else {
-        digitalWrite( D, LOW );
-    }
+    digitalWrite( D, (pattern[i] == (count % 2)) ? LOW : HIGH );
+    Serial.print( count );
+    Serial.print( " " );
+    Serial.println( count % 2 );
     // Clock the shift:
     digitalWrite( CP, HIGH );
     delay(1);
