@@ -25,7 +25,8 @@ unsigned int count = 0;
 
 void loop()
 {
-  //              DP,F,A,B, C,G,D,E
+  //              DP,F,A,B, C,G,D,E -- 7-seg segments
+  //               7,6,5,4, 3,2,1,0 -- 74HC4094 QP pins
   int pattern[] = {0,1,1,0, 0,1,1,1};
   //int pattern[] = {1,1,1,1, 0,0,0,0};
   
@@ -39,7 +40,7 @@ void loop()
     Serial.println( count % 2 );
     // Clock the shift:
     digitalWrite( CP, HIGH );
-    delay(1);
+    delay(10);
     digitalWrite( CP, LOW );
   }
   digitalWrite( OE, LOW );
@@ -47,6 +48,6 @@ void loop()
 
   count ++;
 
-  delay( 1200 );
+  delay( 2400 );
 }
 
