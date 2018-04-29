@@ -21,20 +21,43 @@ void setup()
 
 }
 
+int digits[][8] = {
+//  DP,F,A,B, C,G,D,E -- 7-seg segments
+//   7,6,5,4, 3,2,1,0 -- 74HC4094 QP pins
+//   | | | |  | | | |
+    {0,1,1,1, 1,0,1,1}, // 0
+    {0,0,0,1, 1,0,0,0}, // 1
+    {0,0,1,1, 0,1,1,1}, // 2
+    {0,0,1,1, 1,1,1,0}, // 3
+    {0,1,0,1, 1,1,0,0}, // 4
+    {0,1,1,0, 1,1,1,0}, // 5
+    {0,1,1,0, 1,1,1,1}, // 6
+    {0,0,1,1, 1,0,0,0}, // 7
+    {0,1,1,1, 1,1,1,1}, // 8
+    {0,1,1,1, 1,1,1,0}, // 9
+    {0,1,1,1, 1,1,0,1}, // A
+    {0,1,0,0, 1,1,1,1}, // b
+    {0,1,1,0, 0,0,1,1}, // C
+    {0,0,0,1, 1,1,1,1}, // d
+    {0,1,1,0, 0,1,1,1}, // E
+    {0,1,1,0, 0,1,0,1}, // F
+    {0,0,0,0, 0,0,0,0}, // blank
+    {1,1,1,1, 1,1,1,1}, // all on
+};
+
+
 unsigned int count = 0;
 
 void loop()
 {
-  //              DP,F,A,B, C,G,D,E -- 7-seg segments
-  //               7,6,5,4, 3,2,1,0 -- 74HC4094 QP pins
-  int pattern[] = {0,1,1,0, 0,1,1,1};
-  //int pattern[] = {1,1,1,1, 0,0,0,0};
+  int *pattern;
   
   digitalWrite( STR, LOW );
   digitalWrite( OE, HIGH );
-  for( int i = 0; i < sizeof(pattern)/sizeof(pattern[0]); i ++ ) {
+  for( int i = 0; i < sizeof(digits[0])/sizeof(digits[0][0]); i ++ ) {
+    pattern = digits[count % 16];
     // Output a pattern bit into the shifter:
-    digitalWrite( D, (pattern[i] == (count % 2)) ? LOW : HIGH );
+    digitalWrite( D, pattern[i] ? HIGH : LOW );
     Serial.print( count );
     Serial.print( " " );
     Serial.println( count % 2 );
