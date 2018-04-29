@@ -25,7 +25,8 @@ unsigned int count = 0;
 
 void loop()
 {
-  int pattern[] = {1,0,1,0, 1,0,1,0};
+  //              DP,F,A,B, C,G,D,E
+  int pattern[] = {0,1,1,0, 0,1,1,1};
   //int pattern[] = {1,1,1,1, 0,0,0,0};
   
   digitalWrite( STR, LOW );
