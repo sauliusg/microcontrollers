@@ -40,7 +40,7 @@ void loop()
     Serial.println( count % 2 );
     // Clock the shift:
     digitalWrite( CP, HIGH );
-    delay(10);
+    delay(1);
     digitalWrite( CP, LOW );
   }
   digitalWrite( OE, LOW );
@@ -48,6 +48,6 @@ void loop()
 
   count ++;
 
-  delay( 2400 );
+  delay( 1200 );
 }
 
