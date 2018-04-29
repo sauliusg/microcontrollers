@@ -57,7 +57,12 @@ void loop()
   for( int i = 0; i < sizeof(digits[0])/sizeof(digits[0][0]); i ++ ) {
     pattern = digits[count % 16];
     // Output a pattern bit into the shifter:
-    digitalWrite( D, pattern[i] ? HIGH : LOW );
+    if( i == 0 ) {
+        // Decide whether to enable DP (Decimal Point):
+        digitalWrite( D, count % 3 == 0 ? HIGH : LOW );
+    } else {
+        digitalWrite( D, pattern[i] ? HIGH : LOW );
+    }
     Serial.print( count );
     Serial.print( " " );
     Serial.println( count % 2 );
