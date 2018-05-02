@@ -61,7 +61,7 @@ void loop()
         // Decide whether to enable DP (Decimal Point):
         digitalWrite( D, count % 3 == 0 ? HIGH : LOW );
     } else {
-        digitalWrite( D, pattern[i] ? HIGH : LOW );
+        digitalWrite( D, pattern[i] ? LOW : HIGH );
     }
     Serial.print( count );
     Serial.print( " " );
