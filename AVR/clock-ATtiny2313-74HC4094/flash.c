@@ -98,11 +98,10 @@ int main(void)
         int *pattern;
   
         cbi(PORTD,STR);
-        pattern = phase ? ones : zeros;
-        for( i = 0; i < sizeof(pattern[0]); i ++ ) {
-            // pattern = digits[count % 16];
+        pattern = (phase ? ones : zeros);
+        for( i = 0; i < 8; i ++ ) {
             // Output a pattern bit into the shifter:
-            if(pattern) {
+            if(pattern[i]) {
                 sbi(PORTD,D);
             } else {
                 cbi(PORTD,D);
@@ -110,7 +109,7 @@ int main(void)
             // Clock the shift:
             sbi(PORTD,CP);
             delay_ms(1);
-            sbi(PORTD,CP);
+            cbi(PORTD,CP);
         }
         sbi(PORTD,STR);
 
