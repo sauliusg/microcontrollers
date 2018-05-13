@@ -99,14 +99,13 @@ int main(void)
   
         cbi(PORTD,STR);
         pattern = phase ? ones : zeros;
-        int i;
         for( i = 0; i < sizeof(pattern[0]); i ++ ) {
             // pattern = digits[count % 16];
             // Output a pattern bit into the shifter:
             if(pattern) {
-                sbi(PORTB,D);
+                sbi(PORTD,D);
             } else {
-                cbi(PORTB,D);
+                cbi(PORTD,D);
             }
             // Clock the shift:
             sbi(PORTD,CP);
