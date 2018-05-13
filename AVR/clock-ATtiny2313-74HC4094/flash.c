@@ -79,36 +79,28 @@ int main(void)
 {
     short i;
     /* enable selected pins as an output: */
-#if 1
     sbi(DDRD,PD0);
     sbi(DDRD,PD1);
     sbi(DDRD,PD2);
     sbi(DDRD,PD3);
-#endif
+
     sbi(DDRD,PD5);
     sbi(DDRD,PD4);
     // DDRB=2;
-#if 1
+
     sbi(PORTD,OE);
     cbi(PORTD,CP);
     cbi(PORTD,STR);
-#endif
 
     while (1) {
-        flash(200,200);
-        flash(200,200);
-        flash(200,200);
-        delay_ms(1500);
-        for( i = 100; i >= 20; i -= 10 ) {
-            flash(i,i);
-        }
-#if 0
+        flash(50,50);
+
         int *pattern;
   
         cbi(PORTD,STR);
         pattern = phase ? ones : zeros;
         int i;
-        for( i = 0; i < sizeof(digits[0])/sizeof(digits[0][0]); i ++ ) {
+        for( i = 0; i < sizeof(pattern[0]); i ++ ) {
             // pattern = digits[count % 16];
             // Output a pattern bit into the shifter:
             if(pattern) {
@@ -124,7 +116,6 @@ int main(void)
         sbi(PORTD,STR);
 
         count ++;
-#endif
         phase = (phase == 0 ? 1 : 0);
     }
     return 0;
