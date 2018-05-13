@@ -71,6 +71,7 @@ int OE  = PD3; // Output Enable
 
 
 int ones[] = {1,1,1,1, 1,1,1,1};
+int segA[] = {0,0,0,0, 0,0,0,1};
 int zeros[] = {0,0,0,0, 0,0,0,0};
 
 unsigned int count = 0;
@@ -98,7 +99,7 @@ int main(void)
         int *pattern;
   
         cbi(PORTD,STR);
-        pattern = (phase ? ones : zeros);
+        pattern = (phase ? segA : zeros);
         for( i = 0; i < 8; i ++ ) {
             // Output a pattern bit into the shifter:
             if(pattern[i]) {
