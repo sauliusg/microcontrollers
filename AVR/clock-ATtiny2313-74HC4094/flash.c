@@ -99,7 +99,7 @@ int main(void)
         int *pattern;
   
         cbi(PORTD,STR);
-        pattern = (phase ? segA : zeros);
+        pattern = (phase ? ones : zeros);
         for( i = 0; i < 8; i ++ ) {
             // Output a pattern bit into the shifter:
             if(pattern[i]) {
