@@ -3,16 +3,16 @@
 #define sbi(REGISTER,BIT) REGISTER |= (1 << BIT);    /* sets BIT in REGISTER */
 #define cbi(REGISTER,BIT) REGISTER &= ~(1 << BIT);   /* clears BIT in REGISTER */
 
-#define SEG_A 0x40
-#define SEG_B 0x20
-#define SEG_C 0x08
+#define SEG_A 0x80
+#define SEG_B 0x40
+#define SEG_C 0x20
 #define SEG_D 0x10
-#define SEG_E 0x04
-#define SEG_F 0x80
-#define SEG_G 0x01
-#define SEG_H 0x02
+#define SEG_E 0x08
+#define SEG_F 0x04
+#define SEG_G 0x02
+#define SEG_H 0x01
 
-#if 0
+#if 1
 static short digit7seg[] = {
     /* 0 */ 0xFF & (~ (SEG_G | SEG_H )),
     /* 1 */ SEG_B + SEG_C,
@@ -69,10 +69,11 @@ int STR = PD2; // Strobe: latch shifted values into a parallel output
 int OE  = PD3; // Output Enable
 #endif
 
-
+/*
 int ones[] = {1,1,1,1, 1,1,1,1};
 int segA[] = {0,0,0,0, 0,0,0,1};
 int zeros[] = {0,0,0,0, 0,0,0,0};
+*/
 
 unsigned int count = 0;
 
@@ -94,15 +95,18 @@ int main(void)
     cbi(PORTD,STR);
 
     while (1) {
-        flash(50,50);
+        flash(200,200);
 
-        int *pattern;
-  
+        short digit = count & 0x0F;
+        short pattern = digit7seg[digit];
+
         cbi(PORTD,STR);
-        pattern = (phase ? ones : zeros);
+
         for( i = 0; i < 8; i ++ ) {
             // Output a pattern bit into the shifter:
-            if(pattern[i]) {
+            short bit = pattern & 0x01;
+            pattern >>= 1;
+            if(bit) {
                 sbi(PORTD,D);
             } else {
                 cbi(PORTD,D);
