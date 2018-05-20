@@ -22,28 +22,26 @@ all: ${HEX_FILES}
 %.out : %.o 
 	$(CC) $(CFLAGS) -o $@ -Wl,-Map,$*.map $< 
 
+define AVRLOAD
+	sudo avrdude \
+		-V -p t2313 \
+		-C +dasa2inv-avrdude.conf \
+		-c dasa2inv \
+		-P ${PORT}
+endef
+
 %.o : %.c 
 	$(CC) $(CFLAGS) -c $<
 
-.PHONY: lsfuses
+.PHONY: lsfuses lsfuse
 
 # list fuse bits:
-lsfuses:
-	sudo avrdude \
-		-V -p t2313 \
-		-C +dasa2inv-avrdude.conf \
-		-c dasa2inv \
-		-P ${PORT} \
-		-U lfuse:r:-:h
+lsfuses lsfuse:
+	${AVRLOAD} -U lfuse:r:-:h
 
 # erase the AVR before it is programmed
 upload load: ${HEX_FILES}
-	sudo avrdude \
-		-V -p t2313 \
-		-C +dasa2inv-avrdude.conf \
-		-c dasa2inv \
-		-P ${PORT} \
-		-U flash:w:$<
+	${AVRLOAD} -U flash:w:$<
 
 clean:
 	rm -f ${O_FILES} ${MAP_FILES} ${OUT_FILES}
