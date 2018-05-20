@@ -47,6 +47,7 @@ lsfuses lsfuse:
 refuse:
 	${AVRLOAD} -U lfuse:w:0x64:m
 	${AVRLOAD} -U hfuse:w:0xDF:m
+	${AVRLOAD} -U efuse:w:0xFF:m
 
 # Write fuse bytes needed for this project:
 
