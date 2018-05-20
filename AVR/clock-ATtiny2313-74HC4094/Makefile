@@ -33,13 +33,30 @@ endef
 %.o : %.c 
 	$(CC) $(CFLAGS) -c $<
 
+# List fuse bits:
+
 .PHONY: lsfuses lsfuse
 
-# list fuse bits:
 lsfuses lsfuse:
 	${AVRLOAD} -U lfuse:r:-:h
 
-# erase the AVR before it is programmed
+# Restore original fuses:
+
+.PHONY: refuse
+
+refuse:
+	${AVRLOAD} -U lfuse:w:0x64:m
+	${AVRLOAD} -U hfuse:w:0xDF:m
+
+# Write fuse bytes needed for this project:
+
+.PHONY: wrfuse
+
+wrfuse:
+	${AVRLOAD} -U lfuse:w:0x64:m
+
+# Load HEX file to the AVR controller; erase the AVR before it is
+# programmed if necessary:
 upload load: ${HEX_FILES}
 	${AVRLOAD} -U flash:w:$<
 
