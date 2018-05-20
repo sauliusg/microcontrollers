@@ -12,7 +12,7 @@ MAP_FILES = ${C_FILES:%.c=%.map}
 OUT_FILES = ${C_FILES:%.c=%.out}
 HEX_FILES = ${C_FILES:%.c=%.hex}
 
-.PHONY: all clean distclean cleanAll upload load
+.PHONY: all clean distclean cleanAll
 
 all: ${HEX_FILES}
 
@@ -33,16 +33,14 @@ endef
 %.o : %.c 
 	$(CC) $(CFLAGS) -c $<
 
-# List fuse bits:
+.PHONY: lsfuses lsfuse refuse wrfuse wrfuses
 
-.PHONY: lsfuses lsfuse
+# List fuse bits:
 
 lsfuses lsfuse:
 	${AVRLOAD} -U lfuse:r:-:h
 
 # Restore original fuses:
-
-.PHONY: refuse
 
 refuse:
 	${AVRLOAD} -U lfuse:w:0x64:m
@@ -51,15 +49,21 @@ refuse:
 
 # Write fuse bytes needed for this project:
 
-.PHONY: wrfuse
+LFUSE = lfuses.txt
 
-wrfuse:
-	${AVRLOAD} -U lfuse:w:0x64:m
+wrfuse wrfuses: ${LFUSE}
+	${AVRLOAD} -U lfuse:w:$(shell grep -v '^#' $<):m
 
 # Load HEX file to the AVR controller; erase the AVR before it is
 # programmed if necessary:
+
+.PHONY: load upload rdflash
+
 upload load: ${HEX_FILES}
 	${AVRLOAD} -U flash:w:$<
+
+rdflash: ${HEX_FILES}
+	${AVRLOAD} -U flash:r:-:i
 
 clean:
 	rm -f ${O_FILES} ${MAP_FILES} ${OUT_FILES}
