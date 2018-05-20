@@ -128,7 +128,7 @@ int main(void)
         phase = (phase == 0 ? 1 : 0);
 
         // Read the bits:
-        short buttons = PINB & 0x0F;
+        short buttons = PINB | 0xF0;
         /*
         switch( buttons ) {
         case 1: count = 1; break;
@@ -137,7 +137,7 @@ int main(void)
         case 8: count = 4; break;
         }
         */
-        count = buttons;
+        count = ~buttons;
     }
     return 0;
 }
