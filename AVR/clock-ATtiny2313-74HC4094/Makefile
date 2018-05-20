@@ -25,6 +25,17 @@ all: ${HEX_FILES}
 %.o : %.c 
 	$(CC) $(CFLAGS) -c $<
 
+.PHONY: lsfuses
+
+# list fuse bits:
+lsfuses:
+	sudo avrdude \
+		-V -p t2313 \
+		-C +dasa2inv-avrdude.conf \
+		-c dasa2inv \
+		-P ${PORT} \
+		-U lfuse:r:-:h
+
 # erase the AVR before it is programmed
 upload load: ${HEX_FILES}
 	sudo avrdude \
