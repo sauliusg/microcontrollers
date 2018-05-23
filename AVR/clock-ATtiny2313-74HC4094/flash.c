@@ -81,10 +81,10 @@ int main(void)
 {
     short i;
     /* Enable selected pins as inputs: */
-    cbi(DDRB,PB0);
     cbi(DDRB,PB1);
     cbi(DDRB,PB2);
     cbi(DDRB,PB3);
+    cbi(DDRB,PB4);
 
     /* Enable selected pins as an output: */
     sbi(DDRD,PD0);
@@ -128,12 +128,12 @@ int main(void)
         phase = (phase == 0 ? 1 : 0);
 
         // Read the bits:
-        short buttons = ~PINB & 0x0F;
+        short buttons = ~PINB & 0x1E;
         switch( buttons ) {
-        case 1: count = 1; break;
-        case 2: count = 2; break;
-        case 4: count = 3; break;
-        case 8: count = 4; break;
+        case 2: count = 1; break;
+        case 4: count = 2; break;
+        case 8: count = 3; break;
+        case 16: count = 4; break;
         }
     }
     return 0;
