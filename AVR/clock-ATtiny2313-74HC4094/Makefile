@@ -62,7 +62,7 @@ wrfuse wrfuses: ${LFUSE}
 upload load: ${HEX_FILES}
 	${AVRLOAD} -U flash:w:$<
 
-rdflash: ${HEX_FILES}
+rdflash:
 	${AVRLOAD} -U flash:r:-:i
 
 clean:
