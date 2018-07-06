@@ -85,35 +85,44 @@ void init(void)
     cbi(PORTD,STR);
 }
 
+void put_digit( unsigned short digit )
+{
+    short i;
+    short pattern = digit7seg[digit];
+
+    for( i = 0; i < 8; i ++ ) {
+        // Output a pattern bit into the shifter:
+        short bit = pattern & 0x01;
+        pattern >>= 1;
+        if(bit) {
+            sbi(PORTD,D);
+        } else {
+            cbi(PORTD,D);
+        }
+        // Clock the shift:
+        sbi(PORTD,CP);
+        cbi(PORTD,CP);
+    }
+}
+
 int main(void)
 {
     unsigned short i;
-    int count = 0;
 
     init();
+
+    digits[0] = 0;
+    digits[1] = 9;
+    digits[2] = digits[3] = 6;
     
     while (1) {
 
-        short digit = count % 10;
-        short pattern = digit7seg[digit];
-
         cbi(PORTD,STR);
-
-        for( i = 0; i < 8; i ++ ) {
-            // Output a pattern bit into the shifter:
-            short bit = pattern & 0x01;
-            pattern >>= 1;
-            if(bit) {
-                sbi(PORTD,D);
-            } else {
-                cbi(PORTD,D);
-            }
-            // Clock the shift:
-            sbi(PORTD,CP);
-            cbi(PORTD,CP);
+        for( i = 0; i < 4; i++ ) {
+            put_digit( digits[i] );
         }
         sbi(PORTD,STR);
-        count++;
+
         for( i = 0; i <= 255; i++ ) {
             delay_short(255);
         }
