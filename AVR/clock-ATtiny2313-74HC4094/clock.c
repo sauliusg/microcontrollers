@@ -11,46 +11,20 @@ void delay_short( unsigned short count )
     while( count-- > 0 );
 }
 
-/*
-  Photoresistor to sense ambient light, so that the clock display can
-  be dimmed in the dark:
-
-                       /   /
-                     |/_ |/_
-pin 15 PB1: -o------/\/\/\------|
-             |
-             ---------||--------|
-
-*/
 
 /*
- Segment layout:
- PORTD:
-
- G - PD0 (0x01)
- H - PD1 (0x02)
- E - PD2 (0x04)
- C - PD3 (0x08)
- D - PD4 (0x10)
- B - PD5 (0x20)
- A - PD6 (0x40)
- F - PD7 (0x80)
-
- Dot layout:
-
- Upper dot: PD5
- Lower dot: PD1
-
+ Segment layout -- segment are assigned to the 74HC4094 shifter
+ parallel output pins:
 */
 
-#define SEG_A 0x40
-#define SEG_B 0x20
-#define SEG_C 0x08
+#define SEG_A 0x80
+#define SEG_B 0x40
+#define SEG_C 0x20
 #define SEG_D 0x10
-#define SEG_E 0x04
-#define SEG_F 0x80
-#define SEG_G 0x01
-#define SEG_H 0x02
+#define SEG_E 0x08
+#define SEG_F 0x04
+#define SEG_G 0x02
+#define SEG_H 0x01
 
 static short digit7seg[] = {
     /* 0 */ 0xFF & (~ (SEG_G | SEG_H )),
@@ -71,247 +45,77 @@ static short digit7seg[] = {
     /* F */ SEG_A + SEG_F + SEG_G + SEG_E,
 };
 
-/*
- Button layout:
- PORTC:
-
- indicator 0 (leftmost)  : PC0
- indicator 1             : PC1
- indicator 2             : PC2
- indicator 3 (rightmost) : PC3
-
- middle dots             : PC4
-
- common - PD0
-
- PORTB:
-
- button1 - PD6
- button2 - PD7
- button3 - PD4
- button4 - PD5
- 
+/* Hour dot leds: */
+/* 
+   PD5
+   PD4
 */
 
-short read( unsigned short cycles )
+/* Button pins: */
+/* short buttons = ~PINB & 0x1E; */
+
+
+// 74HC4094 shift register pin number assignments:
+int D   = PD0; // Serial data in
+int CP  = PD1; // Serial data clock
+int STR = PD2; // Strobe: latch shifted values into a parallel output
+int OE  = PD3; // Output Enable
+
+/* Initialise microcontroller: */
+void init(void)
 {
-    unsigned short i;
-    short val = 0xFF;
+    /* Enable selected pins as inputs: */
+    cbi(DDRB,PB1);
+    cbi(DDRB,PB2);
+    cbi(DDRB,PB3);
+    cbi(DDRB,PB4);
 
-    /* disable all 7-seg indicators; set pins low: */
-    PORTC = 0x00;
-    /* Clearing old values from PORTD: */
-    PORTD = 0xFF;
-    /* Configure PORTD for input, except for pin PD0: */
-    DDRD = 0x01;
-    /* Set low level on PD0: */
-    PORTD = 0xFE;
+    /* Enable selected pins as an output: */
+    sbi(DDRD,PD0);
+    sbi(DDRD,PD1);
+    sbi(DDRD,PD2);
+    sbi(DDRD,PD3);
 
-    /* read the values, do debouncing: */
-    for( i = 0; i < cycles; i++ ) {
-	val &= PIND;
-    }
+    sbi(DDRD,PD5);
+    sbi(DDRD,PD4);
+    // DDRB=2;
 
-    /* clean up the ports: */
-    /* disable PORTD pull-up resistors: */
-    PORTD = 0x00;
-    /* program PORTD for output: */
-    DDRD  = 0xFF;
-
-    return val;
-}
-
-#define SECONDS_PER_24H 86400
-
-static volatile long half_seconds;
-static volatile long seconds;
-
-ISR( TIMER1_COMPA_vect )
-{
-    half_seconds ++;
-    if( !(half_seconds & 0x01) ) {
-	seconds ++;
-    }
-
-    if( seconds >= SECONDS_PER_24H ) {
-	seconds = 0;
-    }
-
-    int whole_minutes = seconds / 60;
-    int minutes = whole_minutes % 60;
-    int hours = whole_minutes / 60;
-
-    digits[3] = digit7seg[ minutes % 10 ];
-    digits[2] = digit7seg[ minutes / 10 ];
-
-    digits[1] = digit7seg[ hours % 10 ];
-    digits[0] = digit7seg[ hours / 10 ];
-}
-
-/* Ambiaent light measurement: */
-
-#define MAX_CAPACITOR_CHARGE_COUNT    10
-#define MAX_CAPACITOR_DISCHARGE_COUNT 200
-
-#define CAPACITOR_STATE_CHARGE 0x01
-#define LED_STATE_ON           0x02
-
-unsigned short state;
-
-unsigned short ambient_light( void )
-{
-    static unsigned short capacitor_discharge_count = 0;
-    static unsigned short prev_capacitor_discharge_count = 0;
-    static unsigned short capacitor_charge_count = 0;
-
-    if( state & CAPACITOR_STATE_CHARGE ) {
-        capacitor_charge_count ++;
-        if( capacitor_charge_count >= MAX_CAPACITOR_CHARGE_COUNT ) {
-            state &= ~CAPACITOR_STATE_CHARGE;
-            cbi(DDRB,PB1); // pin is input
-            capacitor_discharge_count = 0;
-        }
-    } else {
-        unsigned short led = PINB;
-        if( led & 0x02 ) {
-            // Not yet discharged:
-            capacitor_discharge_count ++;
-        }
-        if( !(led & 0x02) ||
-            capacitor_discharge_count > MAX_CAPACITOR_DISCHARGE_COUNT ) {
-            // Discharged, or reached maximum count:
-            state |= CAPACITOR_STATE_CHARGE;
-            sbi(DDRB,PB1); // pin is output
-            sbi(PORTB,PB1);
-            capacitor_charge_count = 0;
-            prev_capacitor_discharge_count = capacitor_discharge_count;
-        }
-    }
-    return prev_capacitor_discharge_count;
-}
-
-
-void display_digits(unsigned short cycles)
-{
-    PORTC = 0x01;
-    PORTD = digits[0];
-    delay_short( cycles );
-    PORTD = 0;
-
-    PORTC = 0x02;
-    PORTD = digits[1];
-    delay_short( cycles );
-    PORTD = 0;
-
-    PORTC = 0x04;
-    PORTD = digits[2];
-    delay_short( cycles );
-    PORTD = 0;
-
-    PORTC = 0x08;
-    PORTD = digits[3];
-    delay_short( cycles );
-    PORTD = 0;
-
-    /* Display dots: */
-    PORTC = 0x10;
-    if( half_seconds & 0x01 ) {
-    	PORTD = 0x22;
-    } else {
-    	PORTD = 0x00;
-    }
-    delay_short( cycles / 6 );
-    PORTD = 0;
-
-    PORTC = 0;
-}
-
-static short old_buttons;
-static short bnumbers[4]; /* Button position numbers */
-
-#define MIN_DISPLAY_CYCLES 10
-#define MAX_DISPLAY_CYCLES 200
-
-void read_buttons( unsigned short read_cycles )
-{
-    short buttons = read( read_cycles ) >> 4;;
-    if( buttons != old_buttons ) {
-	short i;
-	for( i = 0; i < 4; i++ ) {
-	    short j = bnumbers[i];
-	    short mask = (0x01 << i);
-	    if( (buttons & mask) < (old_buttons & mask) ) {
-		switch( j ) {
-		case 0: seconds += 3600; break;
-		case 1:
-		    seconds -= 3600;
-		    if( seconds < 0 ) {
-			seconds = SECONDS_PER_24H - 3600;
-		    }
-		    break;
-		case 2: seconds += 60; break;
-		case 3:
-		    seconds -= 60;
-		    if( seconds < 0 ) {
-			seconds = SECONDS_PER_24H - 60;
-		    }
-		    break;
-		}
-	    }
-	    if( seconds >= SECONDS_PER_24H ) {
-		seconds = 0;
-	    }
-	    seconds = (seconds / 60) * 60;
-	}
-	old_buttons = buttons;
-    }
-}
-
-void read_and_display( unsigned short display_cycles,
-		       unsigned short read_cycles )
-{
-    display_digits( display_cycles );
-    read_buttons( read_cycles );
+    sbi(PORTD,OE);
+    cbi(PORTD,CP);
+    cbi(PORTD,STR);
 }
 
 int main(void)
 {
-    DDRC |= 0x1F;
-    DDRD |= 0xFF;
-    PORTD = 0x00;
+    unsigned short i;
+    int count = 0;
 
-    digits[0] = digit7seg[0];
-    digits[1] = digit7seg[1];
-    digits[2] = digit7seg[2];
-    digits[3] = digit7seg[3];
-
-    bnumbers[2] = 0; /* button 1 */
-    bnumbers[3] = 1; /* button 2 */
-    bnumbers[0] = 2; /* button 3 */
-    bnumbers[1] = 3; /* button 4 */
-
-    /* Set up Timer1 for 0.5s at 6.400 MHz crystal: */
-    /* Number of timer pre-scaled pulses to count: */
-    OCR1A = 25000 / 2; /* Half-second intervals. */
-    /* Mode 4, CTC on OCR1A: */
-    TCCR1B |= (1 << WGM12);
-    /* Set interrupt on compare match: */
-    TIMSK |= (1 << OCIE1A);
-    /* set prescaler to 128 and start the timer: */
-    TCCR1B |= (1 << CS12);
-
-    /* Enable interrupts: */
-    sei();
-
+    init();
+    
     while (1) {
-        unsigned short display_cycles;
-        unsigned short ambient_counts = ambient_light();
-        if( ambient_counts < MAX_DISPLAY_CYCLES - MIN_DISPLAY_CYCLES ) {
-            display_cycles = MAX_DISPLAY_CYCLES - ambient_counts;
-        } else {
-            display_cycles = MIN_DISPLAY_CYCLES;
+
+        short digit = count % 10;
+        short pattern = digit7seg[digit];
+
+        cbi(PORTD,STR);
+
+        for( i = 0; i < 8; i ++ ) {
+            // Output a pattern bit into the shifter:
+            short bit = pattern & 0x01;
+            pattern >>= 1;
+            if(bit) {
+                sbi(PORTD,D);
+            } else {
+                cbi(PORTD,D);
+            }
+            // Clock the shift:
+            sbi(PORTD,CP);
+            cbi(PORTD,CP);
         }
-	read_and_display( /* display_cycles = */ display_cycles,
-			  /* read_cycles = */ 127 );
+        sbi(PORTD,STR);
+        count++;
+        for( i = 0; i <= 255; i++ ) {
+            delay_short(255);
+        }
     }
 }
