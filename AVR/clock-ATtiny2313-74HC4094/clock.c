@@ -4,7 +4,7 @@
 #define sbi(REGISTER,BIT) REGISTER |= (1 << BIT);    /* sets BIT in REGISTER */
 #define cbi(REGISTER,BIT) REGISTER &= ~(1 << BIT);   /* clears BIT in REGISTER */
 
-static volatile short digits[4];
+static volatile unsigned short digits[4];
 
 void delay_short( unsigned short count )
 {
@@ -105,6 +105,17 @@ void put_digit( unsigned short digit )
     }
 }
 
+void put_digits( volatile unsigned short digits[] )
+{
+    unsigned short i;
+
+    cbi(PORTD,STR);
+    for( i = 0; i < 4; i++ ) {
+        put_digit( digits[i] );
+    }
+    sbi(PORTD,STR);
+}
+
 int main(void)
 {
     unsigned short i;
@@ -117,11 +128,7 @@ int main(void)
     
     while (1) {
 
-        cbi(PORTD,STR);
-        for( i = 0; i < 4; i++ ) {
-            put_digit( digits[i] );
-        }
-        sbi(PORTD,STR);
+        put_digits( digits );
 
         for( i = 0; i <= 255; i++ ) {
             delay_short(255);
