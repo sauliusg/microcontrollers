@@ -118,7 +118,8 @@ ISR( TIMER1_COMPA_vect )
     	cbi( PORTD, PD5 );
     }
     phase = !phase;
-    
+
+#if 0
     half_seconds ++;
 
     if( !(half_seconds & 0x01) ) {
@@ -128,9 +129,10 @@ ISR( TIMER1_COMPA_vect )
     if( seconds >= SECONDS_PER_24H ) {
 	seconds = 0;
     }
+#endif
 }
 
-void compute_digits( void )
+void compute_digits( volatile unsigned short digits[] )
 {
     int whole_minutes = seconds / 60;
     int minutes = whole_minutes % 60;
@@ -175,13 +177,14 @@ void put_digits( volatile unsigned short digits[] )
 {
     unsigned short i;
 
-    compute_digits();
-
+    cbi(PORTD,STR);
     for( i = 0; i < 4; i++ ) {
         put_digit( digits[i] );
     }
+    sbi(PORTD,STR);
 }
 
+#if 0
 void setup_timer( void )
 {
     /* Disable interrupts: */
@@ -195,17 +198,17 @@ void setup_timer( void )
     TIMSK |= (1 << OCIE1A);
     /* set prescaler to 64 and start the timer: */
     TCCR1B |= ((1 << CS11) | (1 << CS10));
-
     /* Enable interrupts: */
     sei();
 }
+#endif
 
 int main(void)
 {
     unsigned short i;
 
     init();
-    setup_timer();
+    //setup_timer();
 
     digits[0] = 0;
     digits[1] = 9;
@@ -213,11 +216,23 @@ int main(void)
     put_digits( digits );
     
     while (1) {
-        //put_digits( digits );
-        //display_dots( half_seconds );
 
-        //for( i = 0; i <= 255; i++ ) {
-        //    delay_short(255);
-        //}
+        half_seconds ++;
+
+        if( !(half_seconds & 0x01) ) {
+            seconds ++;
+        }
+
+        if( seconds >= SECONDS_PER_24H ) {
+            seconds = 0;
+        }
+
+        compute_digits( digits );
+        put_digits( digits );
+        display_dots( half_seconds );
+
+        for( i = 0; i <= 255; i++ ) {
+            delay_short(255);
+        }
     }
 }
