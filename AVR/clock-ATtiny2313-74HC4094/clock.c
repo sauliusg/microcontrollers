@@ -125,17 +125,17 @@ ISR( TIMER1_COMPA_vect )
     int hours = whole_minutes / 60;
 
 #if 0    
-    digits[3] = minutes % 10;
-    digits[2] = minutes / 10;
+    digits[0] = minutes % 10;
+    digits[1] = minutes / 10;
 
-    digits[1] = hours % 10;
-    digits[0] = hours / 10;
+    digits[2] = hours % 10;
+    digits[3] = hours / 10;
 #else
-    digits[3] = seconds % 10;
-    digits[2] = seconds / 10;
+    digits[0] = seconds % 10;
+    digits[1] = seconds / 10;
 
-    digits[1] = minutes % 10;
-    digits[0] = minutes / 10;
+    digits[2] = minutes % 10;
+    digits[3] = minutes / 10;
 #endif
 }
 
