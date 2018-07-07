@@ -297,7 +297,7 @@ int main(void)
     TCCR1B |= (1 << WGM12);
     /* Set interrupt on compare match: */
     TIMSK |= (1 << OCIE1A);
-    /* set prescaler to 128 and start the timer: */
+    /* set prescaler to 256 and start the timer: */
     TCCR1B |= (1 << CS12);
 
     /* Enable interrupts: */
