@@ -146,7 +146,7 @@ void compute_digits( volatile unsigned short digits[] )
     digits[0] = hours / 10;
 #else
     digits[3] = seconds % 10;
-    digits[2] = seconds / 10;
+    digits[2] = ((seconds % 60) / 10) % 10;
 
     digits[1] = minutes % 10;
     digits[0] = minutes / 10;
