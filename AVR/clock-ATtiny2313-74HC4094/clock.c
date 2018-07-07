@@ -120,6 +120,7 @@ ISR( TIMER1_COMPA_vect )
     phase = !phase;
     
     half_seconds ++;
+
     if( !(half_seconds & 0x01) ) {
 	seconds ++;
     }
@@ -127,7 +128,10 @@ ISR( TIMER1_COMPA_vect )
     if( seconds >= SECONDS_PER_24H ) {
 	seconds = 0;
     }
+}
 
+void compute_digits( void )
+{
     int whole_minutes = seconds / 60;
     int minutes = whole_minutes % 60;
     int hours = whole_minutes / 60;
@@ -171,11 +175,11 @@ void put_digits( volatile unsigned short digits[] )
 {
     unsigned short i;
 
-    cbi(PORTD,STR);
+    compute_digits();
+
     for( i = 0; i < 4; i++ ) {
         put_digit( digits[i] );
     }
-    sbi(PORTD,STR);
 }
 
 void setup_timer( void )
@@ -206,9 +210,14 @@ int main(void)
     digits[0] = 0;
     digits[1] = 9;
     digits[2] = digits[3] = 6;
+    put_digits( digits );
     
     while (1) {
-        put_digits( digits );
-        display_dots( half_seconds );
+        //put_digits( digits );
+        //display_dots( half_seconds );
+
+        //for( i = 0; i <= 255; i++ ) {
+        //    delay_short(255);
+        //}
     }
 }
