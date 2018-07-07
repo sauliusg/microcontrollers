@@ -96,7 +96,6 @@ void init(void)
 
     sbi(DDRD,PD5);
     sbi(DDRD,PD4);
-    // DDRB=2;
 
     sbi(PORTD,OE);
     cbi(PORTD,CP);
