@@ -162,11 +162,30 @@ void put_digits( volatile unsigned short digits[] )
     sbi(PORTD,STR);
 }
 
+void setup_timer( void )
+{
+    /* Disable interrupts: */
+    cli();
+    /* Set up Timer1 for 0.5s at 16.0000 MHz crystal: */
+    /* Number of timer pre-scaled pulses to count: */
+    OCR1A = 15625 / 2; /* Half-second intervals. */
+    /* Mode 4, CTC on OCR1A: */
+    TCCR1B |= (1 << WGM12);
+    /* Set interrupt on compare match: */
+    TIMSK |= (1 << OCIE1A);
+    /* set prescaler to 1024 and start the timer: */
+    TCCR1B |= (1 << CS12) | (1 << CS10);
+
+    /* Enable interrupts: */
+    sei();
+}
+
 int main(void)
 {
     unsigned short i;
 
     init();
+    setup_timer();
 
     digits[0] = 0;
     digits[1] = 9;
