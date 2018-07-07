@@ -108,16 +108,14 @@ void init(void)
 
 static volatile long half_seconds;
 static volatile long seconds;
-static volatile short phase;
 
 ISR( TIMER1_COMPA_vect )
 {
-    if( phase ) {
+    if( seconds & 0x01 ) {
     	sbi( PORTD, PD5 );
     } else {
     	cbi( PORTD, PD5 );
     }
-    phase = !phase;
 
 #if 1
     half_seconds ++;
@@ -233,10 +231,10 @@ int main(void)
 
         compute_digits( digits );
         put_digits( digits );
-        //display_dots( half_seconds );
+        display_dots( half_seconds );
 
         //for( i = 0; i <= 255; i++ ) {
-            delay_short(255);
+        //delay_short(255);
         //}
     }
 }
