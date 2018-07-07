@@ -48,18 +48,18 @@ static short digit7seg[] = {
 
 /* Hour dot leds:
 
-   Dot 1: PD5
-   Dot 2: PD4
+   Upper dot: PD4 
+   Lower dot: PD5
 */
 
 void display_dots( long half_seconds )
 {
     if( half_seconds & 0x01 ) {
     	cbi( PORTD, PD4 );
-    	cbi( PORTD, PD5 );
+    	//cbi( PORTD, PD5 );
     } else {
     	sbi( PORTD, PD4 );
-    	sbi( PORTD, PD5 );
+    	//sbi( PORTD, PD5 );
     }
 }
 
