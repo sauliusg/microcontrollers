@@ -181,8 +181,8 @@ void setup_timer( void )
     TCCR1B |= (1 << WGM12);
     /* Set interrupt on compare match: */
     TIMSK |= (1 << OCIE1A);
-    /* set prescaler to 1024 and start the timer: */
-    TCCR1B |= ((1 << CS12) | (1 << CS10));
+    /* set prescaler to 256 and start the timer: */
+    TCCR1B |= (1 << CS12);
 
     /* Enable interrupts: */
     sei();
