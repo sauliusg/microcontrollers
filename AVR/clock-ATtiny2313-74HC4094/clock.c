@@ -11,6 +11,7 @@ void delay_short( unsigned short count )
     while( count-- > 0 );
 }
 
+/* Pins PD6 (pin 11) and PB0 (pin 12) are free so far. */
 
 /*
  Segment layout -- segment are assigned to the 74HC4094 shifter
@@ -45,15 +46,32 @@ static short digit7seg[] = {
     /* F */ SEG_A + SEG_F + SEG_G + SEG_E,
 };
 
-/* Hour dot leds: */
-/* 
-   PD5
-   PD4
+/* Hour dot leds:
+
+   Dot 1: PD5
+   Dot 2: PD4
 */
 
-/* Button pins: */
-/* short buttons = ~PINB & 0x1E; */
+void display_dots( long half_seconds )
+{
+    if( half_seconds & 0x01 ) {
+    	cbi( PORTD, PD4 );
+    	cbi( PORTD, PD5 );
+    } else {
+    	sbi( PORTD, PD4 );
+    	sbi( PORTD, PD5 );
+    }
+}
 
+/* Button pins:
+
+  short buttons = ~PINB & 0x1E;
+
+  Button 1: PB1
+  Button 2: PB2
+  Button 3: PB3
+  Button 4: PB4
+*/
 
 // 74HC4094 shift register pin number assignments:
 int D   = PD0; // Serial data in
@@ -83,6 +101,35 @@ void init(void)
     sbi(PORTD,OE);
     cbi(PORTD,CP);
     cbi(PORTD,STR);
+}
+
+/* Second-counting interrupt service routine: */
+
+#define SECONDS_PER_24H 86400
+
+static volatile long half_seconds;
+static volatile long seconds;
+
+ISR( TIMER1_COMPA_vect )
+{
+    half_seconds ++;
+    if( !(half_seconds & 0x01) ) {
+	seconds ++;
+    }
+
+    if( seconds >= SECONDS_PER_24H ) {
+	seconds = 0;
+    }
+
+    int whole_minutes = seconds / 60;
+    int minutes = whole_minutes % 60;
+    int hours = whole_minutes / 60;
+
+    digits[3] = digit7seg[ minutes % 10 ];
+    digits[2] = digit7seg[ minutes / 10 ];
+
+    digits[1] = digit7seg[ hours % 10 ];
+    digits[0] = digit7seg[ hours / 10 ];
 }
 
 void put_digit( unsigned short digit )
@@ -129,6 +176,7 @@ int main(void)
     while (1) {
 
         put_digits( digits );
+        display_dots( half_seconds );
 
         for( i = 0; i <= 255; i++ ) {
             delay_short(255);
