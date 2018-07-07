@@ -233,7 +233,7 @@ int main(void)
 
         compute_digits( digits );
         put_digits( digits );
-        display_dots( half_seconds );
+        //display_dots( half_seconds );
 
         //for( i = 0; i <= 255; i++ ) {
             delay_short(255);
