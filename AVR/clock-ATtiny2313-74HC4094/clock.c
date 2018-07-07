@@ -108,7 +108,6 @@ void init(void)
 
 static volatile long half_seconds;
 static volatile long seconds;
-
 static volatile short phase;
 
 ISR( TIMER1_COMPA_vect )
@@ -133,7 +132,7 @@ ISR( TIMER1_COMPA_vect )
     int minutes = whole_minutes % 60;
     int hours = whole_minutes / 60;
 
-#if 0    
+#if 0
     digits[3] = minutes % 10;
     digits[2] = minutes / 10;
 
@@ -209,12 +208,7 @@ int main(void)
     digits[2] = digits[3] = 6;
     
     while (1) {
-
         put_digits( digits );
         display_dots( half_seconds );
-
-        for( i = 0; i <= 255; i++ ) {
-            delay_short(255);
-        }
     }
 }
