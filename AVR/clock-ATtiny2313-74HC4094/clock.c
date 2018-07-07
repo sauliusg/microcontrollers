@@ -109,8 +109,17 @@ void init(void)
 static volatile long half_seconds;
 static volatile long seconds;
 
+static volatile short phase;
+
 ISR( TIMER1_COMPA_vect )
 {
+    if( phase ) {
+    	sbi( PORTD, PD5 );
+    } else {
+    	cbi( PORTD, PD5 );
+    }
+    phase = !phase;
+    
     half_seconds ++;
     if( !(half_seconds & 0x01) ) {
 	seconds ++;
