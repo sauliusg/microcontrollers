@@ -180,7 +180,9 @@ void put_digits( volatile unsigned short digits[] )
 
     cbi(PORTD,STR);
     for( i = 0; i < 4; i++ ) {
+        cli();
         put_digit( digits[i] );
+        sei();
     }
     sbi(PORTD,STR);
 }
@@ -243,9 +245,7 @@ int main(void)
         }
 #endif
 
-        cli();
         compute_digits( digits );
-        sei();
         put_digits( digits );
         display_dots( half_seconds );
 
