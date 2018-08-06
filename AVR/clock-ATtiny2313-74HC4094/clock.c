@@ -7,10 +7,10 @@
 
 static volatile unsigned short digits[4];
 
-void delay_short( unsigned short count )
-{
-    while( count-- > 0 );
-}
+//void delay_short( unsigned short count )
+//{
+//    while( count-- > 0 );
+//}
 
 /* Pins PD6 (pin 11) and PB0 (pin 12) are free so far. */
 
@@ -124,10 +124,7 @@ ISR( TIMER1_COMPA_vect )
     }
 #endif
 
-    unsigned short count = 100;
-    while( count-- > 0 );
-    
-#if 0
+#if 1
     if( half_seconds & 0x01 ) {
     	cbi( PORTD, PD5 );
     } else {
@@ -162,23 +159,21 @@ void put_digit( unsigned short digit )
     short i;
     short pattern = digit7seg[digit];
 
+    cli();
     for( i = 0; i < 8; i ++ ) {
         // Output a pattern bit into the shifter:
         short bit = pattern & 0x01;
         pattern >>= 1;
-        cli();
         if(bit) {
             sbi(PORTD,D);
         } else {
             cbi(PORTD,D);
         }
-        sei();
         // Clock the shift:
-        cli();
         sbi(PORTD,CP);
         cbi(PORTD,CP);
-        sei();
     }
+    sei();
 }
 
 void put_digits( volatile unsigned short digits[] )
