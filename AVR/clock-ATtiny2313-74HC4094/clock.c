@@ -126,9 +126,11 @@ ISR( TIMER1_COMPA_vect )
 
 #if 1
     if( half_seconds & 0x01 ) {
-    	sbi( PORTD, PD5 );
-    } else {
     	cbi( PORTD, PD5 );
+    	cbi( PORTD, PD5 );
+    } else {
+    	sbi( PORTD, PD5 );
+    	sbi( PORTD, PD5 );
     }
 #endif
 }
@@ -223,7 +225,7 @@ int main(void)
     
     while (1) {
 
-        #if 0
+#if 0
         half_seconds ++;
 
         if( !(half_seconds & 0x01) ) {
@@ -233,15 +235,25 @@ int main(void)
         if( seconds >= SECONDS_PER_24H ) {
             seconds = 0;
         }
-        #endif
+#endif
 
+#if 0
+        if( half_seconds & 0x01 ) {
+            cbi( PORTD, PD5 );
+        } else {
+            sbi( PORTD, PD5 );
+        }
+#endif
+
+        cli();
         compute_digits( digits );
         put_digits( digits );
+        sei();
         display_dots( half_seconds );
 
-        sleep_enable();
-        sei();
-        sleep_cpu();
+        //sleep_enable();
+        //sei();
+        //sleep_cpu();
 
         //for( i = 0; i <= 255; i++ ) {
         //    delay_short(255);
