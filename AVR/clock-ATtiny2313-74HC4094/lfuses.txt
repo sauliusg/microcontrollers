@@ -1,6 +1,7 @@
 # ATTiny low fuse
-# Ext. Crystal Osc.; Freq. 8.0- MHz Start-up time: 14 CK+65ms [CKSEL=1111, SUT=11]
+# Ext. Crystal Osc.; Freq. 8.0- MHz Start-up time: 14 CK+65ms
+# [CKSEL=1111, SUT=11], CKDIV8=1 (unprogrammed).
 # Computed using:
 # http://eleccelerator.com/fusecalc/fusecalc.php?chip=attiny2313
 # S.G. 2018-05-20
-0x7F
+0xFF

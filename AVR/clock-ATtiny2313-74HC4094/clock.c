@@ -187,15 +187,18 @@ void setup_timer( void )
 {
     /* Disable interrupts: */
     cli();
+    /* Low Fuse should be FF for this setup; in particular, CKDIV8
+       should be unprogrammed (1), so that the crystal clock
+       frequencey is NOT divided by 8. */
     /* Set up Timer1 for 0.5s at 16.0000 MHz crystal: */
     /* Number of timer pre-scaled pulses to count: */
-    OCR1A = 15625 / 2; /* Half-second intervals. */
+    OCR1A = 62500 / 2; /* Half-second intervals. */
     /* Mode 4, CTC on OCR1A: */
     TCCR1B |= (1 << WGM12);
     /* Set interrupt on compare match: */
     TIMSK |= (1 << OCIE1A);
-    /* set prescaler to 64 and start the timer: */
-    TCCR1B |= ((1 << CS11) | (1 << CS10));
+    /* set prescaler to 256 and start the timer: */
+    TCCR1B |= (1 << CS12);
     /* Enable interrupts: */
     sei();
 }
