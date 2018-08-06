@@ -130,7 +130,9 @@ ISR( TIMER1_COMPA_vect )
 #endif
 
     //delay_short( 0 );
-    dummy( 0 );
+    //dummy( 0 );
+    unsigned short count = 100;
+    while( count-- > 0 );
     
 #if 0
     if( half_seconds & 0x01 ) {
