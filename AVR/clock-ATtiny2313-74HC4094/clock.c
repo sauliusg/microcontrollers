@@ -12,11 +12,6 @@ void delay_short( unsigned short count )
     while( count-- > 0 );
 }
 
-void dummy( unsigned short ignored )
-{
-    int x = ignored * 10;
-}
-
 /* Pins PD6 (pin 11) and PB0 (pin 12) are free so far. */
 
 /*
@@ -129,8 +124,6 @@ ISR( TIMER1_COMPA_vect )
     }
 #endif
 
-    //delay_short( 0 );
-    //dummy( 0 );
     unsigned short count = 100;
     while( count-- > 0 );
     
