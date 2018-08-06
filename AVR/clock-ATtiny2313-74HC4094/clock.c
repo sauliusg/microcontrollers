@@ -127,9 +127,7 @@ ISR( TIMER1_COMPA_vect )
 #if 1
     if( half_seconds & 0x01 ) {
     	cbi( PORTD, PD5 );
-    	cbi( PORTD, PD5 );
     } else {
-    	sbi( PORTD, PD5 );
     	sbi( PORTD, PD5 );
     }
 #endif
