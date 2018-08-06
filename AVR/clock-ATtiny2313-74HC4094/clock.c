@@ -245,8 +245,8 @@ int main(void)
 
         cli();
         compute_digits( digits );
-        put_digits( digits );
         sei();
+        put_digits( digits );
         display_dots( half_seconds );
 
         //sleep_enable();
