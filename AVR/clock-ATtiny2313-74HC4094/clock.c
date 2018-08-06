@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+ #include <avr/sleep.h>
 
 #define sbi(REGISTER,BIT) REGISTER |= (1 << BIT);    /* sets BIT in REGISTER */
 #define cbi(REGISTER,BIT) REGISTER &= ~(1 << BIT);   /* clears BIT in REGISTER */
@@ -111,12 +112,6 @@ static volatile long seconds;
 
 ISR( TIMER1_COMPA_vect )
 {
-    if( seconds & 0x01 ) {
-    	sbi( PORTD, PD5 );
-    } else {
-    	cbi( PORTD, PD5 );
-    }
-
 #if 1
     half_seconds ++;
 
@@ -126,6 +121,14 @@ ISR( TIMER1_COMPA_vect )
 
     if( seconds >= SECONDS_PER_24H ) {
 	seconds = 0;
+    }
+#endif
+
+#if 1
+    if( half_seconds & 0x01 ) {
+    	sbi( PORTD, PD5 );
+    } else {
+    	cbi( PORTD, PD5 );
     }
 #endif
 }
@@ -236,8 +239,12 @@ int main(void)
         put_digits( digits );
         display_dots( half_seconds );
 
+        sleep_enable();
+        sei();
+        sleep_cpu();
+
         //for( i = 0; i <= 255; i++ ) {
-        //delay_short(255);
+        //    delay_short(255);
         //}
     }
 }
