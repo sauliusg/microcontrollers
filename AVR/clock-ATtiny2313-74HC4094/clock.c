@@ -2,8 +2,8 @@
 #include <avr/interrupt.h>
  #include <avr/sleep.h>
 
-#define sbi(REGISTER,BIT) REGISTER |= (1 << BIT);    /* sets BIT in REGISTER */
-#define cbi(REGISTER,BIT) REGISTER &= ~(1 << BIT);   /* clears BIT in REGISTER */
+#define sbi(REGISTER,BIT) REGISTER |= _BV(BIT);    /* sets BIT in REGISTER */
+#define cbi(REGISTER,BIT) REGISTER &= ~(_BV(BIT));   /* clears BIT in REGISTER */
 
 static volatile unsigned short digits[4];
 
