@@ -195,7 +195,7 @@ void setup_timer( void )
     sei();
 }
 
-#define DEBOUNCING_DELAY 12
+#define DEBOUNCING_DELAY 0
 
 unsigned short
 read_buttons( void )
@@ -244,10 +244,10 @@ int main(void)
 
         switch( buttons ) {
         case 2:
-            seconds += 1;
+            seconds = (seconds/60)*60;
             break;
         case 4:
-            seconds -= 1;
+            seconds = 0;
             break;
         case 8:
             seconds += 60;
