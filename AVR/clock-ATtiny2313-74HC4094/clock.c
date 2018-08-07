@@ -120,7 +120,7 @@ ISR( TIMER1_COMPA_vect )
 
 void compute_digits( volatile unsigned short digits[] )
 {
-#if 0
+#if 1
     int whole_minutes = seconds / 60;
     int minutes = whole_minutes % 60;
     int hours = whole_minutes / 60;
@@ -242,22 +242,34 @@ int main(void)
         display_dots( half_seconds );
         buttons = read_buttons();
 
-        switch( buttons ) {
-        case 2:
+        if( buttons ) {
+            switch( buttons ) {
+            case 2:
+                seconds += 60;
+                break;
+            case 4:
+                if( seconds >= 60 )
+                    seconds -= 60;
+                else
+                    seconds = SECONDS_PER_24H - 60;
+                break;
+            case 8:
+                seconds += 3600;
+                break;
+            case 16:
+                if( seconds >= 3600 )
+                    seconds -= 3600;
+                else
+                    seconds = SECONDS_PER_24H - 3600;
+                break;
+            default:
+                // do nothing;
+                break;
+            }
+	    if( seconds >= SECONDS_PER_24H ) {
+		seconds = 0;
+	    }
             seconds = (seconds/60)*60;
-            break;
-        case 4:
-            seconds = 0;
-            break;
-        case 8:
-            seconds += 60;
-            break;
-        case 16:
-            seconds -= 60;
-            break;
-        default:
-            // do nothing;
-            break;
         }
 
         //sleep_enable();
