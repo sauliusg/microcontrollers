@@ -4,7 +4,7 @@ PORT=/dev/ttyUSB0
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 # optimize for size:
-CFLAGS=-g -mmcu=$(MCU) -Wall -Wstrict-prototypes -mcall-prologues
+CFLAGS=-g -Os -mmcu=$(MCU) -Wall -Wstrict-prototypes
 
 C_FILES   = ${wildcard *.c}
 O_FILES   = ${C_FILES:%.c=%.o}

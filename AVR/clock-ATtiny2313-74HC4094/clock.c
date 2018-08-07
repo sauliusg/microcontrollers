@@ -195,6 +195,32 @@ void setup_timer( void )
     sei();
 }
 
+#define DEBOUNCING_DELAY 12
+
+unsigned short
+read_buttons( void )
+{
+    static short countdown;
+    static unsigned short old_buttons;
+    unsigned short buttons;
+
+    if( countdown > 0 ) {
+        // Delay for debouncing:
+        countdown --;
+        return 0;
+    } else {
+        buttons = ~PINB & 0x1E;
+        if( buttons != old_buttons ) {
+            // A new button press event is detected:
+            old_buttons = buttons;
+            // Start debouncing:
+            countdown = DEBOUNCING_DELAY;
+            return buttons;
+        }
+        return 0;
+    }
+}
+
 int main(void)
 {
     init();
@@ -206,12 +232,33 @@ int main(void)
     digits[2] = digits[3] = 6;
     put_digits( digits );
 #endif
-    
+
+    unsigned short buttons;
+
     while (1) {
 
         compute_digits( digits );
         put_digits( digits );
         display_dots( half_seconds );
+        buttons = read_buttons();
+
+        switch( buttons ) {
+        case 2:
+            seconds += 1;
+            break;
+        case 4:
+            seconds -= 1;
+            break;
+        case 8:
+            seconds += 60;
+            break;
+        case 16:
+            seconds -= 60;
+            break;
+        default:
+            // do nothing;
+            break;
+        }
 
         //sleep_enable();
         //sei();
