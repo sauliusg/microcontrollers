@@ -102,8 +102,8 @@ void init(void)
 
 #define SECONDS_PER_24H 86400
 
-static volatile long half_seconds;
-static volatile long seconds;
+static volatile unsigned long half_seconds;
+static volatile unsigned long seconds;
 
 ISR( TIMER1_COMPA_vect )
 {
@@ -131,14 +131,14 @@ void compute_digits( volatile unsigned short digits[] )
     digits[1] = hours % 10;
     digits[0] = hours / 10;
 #else
-    int whole_minutes = seconds / 60;
-    int minutes = whole_minutes % 60;
+    unsigned int whole_minutes = seconds / 60;
+    unsigned int minutes = whole_minutes % 60;
 
     digits[3] = seconds % 10;
     digits[2] = ((seconds % 60) / 10) % 10;
 
     digits[1] = minutes % 10;
-    digits[0] = minutes / 10;
+    digits[0] = (minutes / 10) % 10;
 #endif
 }
 
