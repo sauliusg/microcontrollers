@@ -7,15 +7,10 @@
 
 static volatile unsigned short digits[4];
 
-//void delay_short( unsigned short count )
-//{
-//    while( count-- > 0 );
-//}
-
 /* Pins PD6 (pin 11) and PB0 (pin 12) are free so far. */
 
 /*
- Segment layout -- segment are assigned to the 74HC4094 shifter
+ Segment layout -- segments are assigned to the 74HC4094 shifter
  parallel output pins:
 */
 
