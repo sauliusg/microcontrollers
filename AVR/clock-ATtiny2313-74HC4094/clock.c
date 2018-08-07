@@ -57,10 +57,10 @@ void display_dots( long half_seconds )
 {
     if( half_seconds & 0x01 ) {
     	cbi( PORTD, PD4 );
-    	//cbi( PORTD, PD5 );
+    	cbi( PORTD, PD5 );
     } else {
     	sbi( PORTD, PD4 );
-    	//sbi( PORTD, PD5 );
+    	sbi( PORTD, PD5 );
     }
 }
 
@@ -112,7 +112,6 @@ static volatile long seconds;
 
 ISR( TIMER1_COMPA_vect )
 {
-#if 1
     half_seconds ++;
 
     if( !(half_seconds & 0x01) ) {
@@ -122,30 +121,24 @@ ISR( TIMER1_COMPA_vect )
     if( seconds >= SECONDS_PER_24H ) {
 	seconds = 0;
     }
-#endif
-
-#if 1
-    if( half_seconds & 0x01 ) {
-    	cbi( PORTD, PD5 );
-    } else {
-    	sbi( PORTD, PD5 );
-    }
-#endif
 }
 
 void compute_digits( volatile unsigned short digits[] )
 {
+#if 0
     int whole_minutes = seconds / 60;
     int minutes = whole_minutes % 60;
     int hours = whole_minutes / 60;
 
-#if 0
     digits[3] = minutes % 10;
     digits[2] = minutes / 10;
 
     digits[1] = hours % 10;
     digits[0] = hours / 10;
 #else
+    int whole_minutes = seconds / 60;
+    int minutes = whole_minutes % 60;
+
     digits[3] = seconds % 10;
     digits[2] = ((seconds % 60) / 10) % 10;
 
@@ -187,7 +180,6 @@ void put_digits( volatile unsigned short digits[] )
     sbi(PORTD,STR);
 }
 
-#if 1
 void setup_timer( void )
 {
     /* Disable interrupts: */
@@ -207,12 +199,9 @@ void setup_timer( void )
     /* Enable interrupts: */
     sei();
 }
-#endif
 
 int main(void)
 {
-    unsigned short i;
-
     init();
     setup_timer();
 
@@ -225,26 +214,6 @@ int main(void)
     
     while (1) {
 
-#if 0
-        half_seconds ++;
-
-        if( !(half_seconds & 0x01) ) {
-            seconds ++;
-        }
-
-        if( seconds >= SECONDS_PER_24H ) {
-            seconds = 0;
-        }
-#endif
-
-#if 0
-        if( half_seconds & 0x01 ) {
-            cbi( PORTD, PD5 );
-        } else {
-            sbi( PORTD, PD5 );
-        }
-#endif
-
         compute_digits( digits );
         put_digits( digits );
         display_dots( half_seconds );
@@ -253,8 +222,5 @@ int main(void)
         //sei();
         //sleep_cpu();
 
-        //for( i = 0; i <= 255; i++ ) {
-        //    delay_short(255);
-        //}
     }
 }
