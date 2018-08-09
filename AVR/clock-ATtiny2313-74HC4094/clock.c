@@ -227,17 +227,34 @@ read_buttons( void )
     }
 }
 
+#define DIMMER_START_HOUR 20L
+#define DIMMER_END_HOUR    7L
+
+static unsigned short dimmer_phase;
+
 int main(void)
 {
     init();
     setup_timer();
 
     unsigned short buttons;
+    unsigned short dimmer_is_on;
 
     while (1) {
 
+        dimmer_phase = dimmer_phase ? 0 : 1;
+        dimmer_is_on = (seconds > DIMMER_START_HOUR * SECONDS_PER_HOUR ||
+                        seconds < DIMMER_END_HOUR * SECONDS_PER_HOUR);
+
         compute_digits( digits );
         put_digits( digits );
+
+        if( dimmer_is_on && dimmer_phase == 0 ) {
+            cbi(PORTD,OE);
+        } else {
+            sbi(PORTD,OE);
+        }
+
         display_dots( half_seconds );
         buttons = read_buttons();
 
