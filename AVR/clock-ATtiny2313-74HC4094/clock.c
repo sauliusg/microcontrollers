@@ -118,27 +118,33 @@ ISR( TIMER1_COMPA_vect )
     }
 }
 
+#define SECONDS_PER_MINUTE 60
+#define MINUTES_PER_HOUR   60
+#define SECONDS_PER_HOUR   (SECONDS_PER_MINUTE * MINUTES_PER_HOUR)
+
+#define DIGIT_BASE         10
+
 void compute_digits( volatile unsigned short digits[] )
 {
 #if 1
-    int whole_minutes = seconds / 60;
-    int minutes = whole_minutes % 60;
-    int hours = whole_minutes / 60;
+    int whole_minutes = seconds / SECONDS_PER_MINUTE;
+    int minutes = whole_minutes % MINUTES_PER_HOUR;
+    int hours = whole_minutes / MINUTES_PER_HOUR;
 
-    digits[3] = minutes % 10;
-    digits[2] = minutes / 10;
+    digits[3] = minutes % DIGIT_BASE;
+    digits[2] = minutes / DIGIT_BASE;
 
-    digits[1] = hours % 10;
-    digits[0] = hours / 10;
+    digits[1] = hours % DIGIT_BASE;
+    digits[0] = hours / DIGIT_BASE;
 #else
-    unsigned int whole_minutes = seconds / 60;
-    unsigned int minutes = whole_minutes % 60;
+    unsigned int whole_minutes = seconds / SECONDS_PER_MINUTE;
+    unsigned int minutes = whole_minutes % MINUTES_PER_HOUR;
 
-    digits[3] = seconds % 10;
-    digits[2] = ((seconds % 60) / 10) % 10;
+    digits[3] = seconds % DIGIT_BASE;
+    digits[2] = ((seconds % SECONDS_PER_MINUTE) / DIGIT_BASE) % DIGIT_BASE;
 
-    digits[1] = minutes % 10;
-    digits[0] = (minutes / 10) % 10;
+    digits[1] = minutes % DIGIT_BASE;
+    digits[0] = (minutes / DIGIT_BASE) % DIGIT_BASE;
 #endif
 }
 
@@ -245,22 +251,22 @@ int main(void)
         if( buttons ) {
             switch( buttons ) {
             case 2:
-                seconds += 60;
+                seconds += SECONDS_PER_MINUTE;
                 break;
             case 4:
-                if( seconds >= 60 )
-                    seconds -= 60;
+                if( seconds >= SECONDS_PER_MINUTE )
+                    seconds -= SECONDS_PER_MINUTE;
                 else
-                    seconds = SECONDS_PER_24H - 60;
+                    seconds = SECONDS_PER_24H - SECONDS_PER_MINUTE;
                 break;
             case 8:
-                seconds += 3600;
+                seconds += SECONDS_PER_HOUR;
                 break;
             case 16:
-                if( seconds >= 3600 )
-                    seconds -= 3600;
+                if( seconds >= SECONDS_PER_HOUR )
+                    seconds -= SECONDS_PER_HOUR;
                 else
-                    seconds = SECONDS_PER_24H - 3600;
+                    seconds = SECONDS_PER_24H - SECONDS_PER_HOUR;
                 break;
             default:
                 // do nothing;
@@ -269,7 +275,7 @@ int main(void)
 	    if( seconds >= SECONDS_PER_24H ) {
 		seconds = 0;
 	    }
-            seconds = (seconds/60)*60;
+            seconds = (seconds/SECONDS_PER_MINUTE)*SECONDS_PER_MINUTE;
         }
 
         //sleep_enable();
