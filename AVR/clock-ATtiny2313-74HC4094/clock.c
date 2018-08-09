@@ -268,7 +268,9 @@ int main(void)
 	    if( seconds >= SECONDS_PER_24H ) {
 		seconds = 0;
 	    }
-            seconds = (seconds/SECONDS_PER_MINUTE)*SECONDS_PER_MINUTE;
+            if( buttons == 2 || buttons == 4 ) {
+                seconds = (seconds/SECONDS_PER_MINUTE)*SECONDS_PER_MINUTE;
+            }
         }
 
         //sleep_enable();
