@@ -232,13 +232,6 @@ int main(void)
     init();
     setup_timer();
 
-#if 0
-    digits[0] = 0;
-    digits[1] = 9;
-    digits[2] = digits[3] = 6;
-    put_digits( digits );
-#endif
-
     unsigned short buttons;
 
     while (1) {
