@@ -242,14 +242,14 @@ int main(void)
 
     while (1) {
 
-        dimmer_phase = dimmer_phase ? 0 : 1;
+        dimmer_phase = (dimmer_phase + 1) & 3;
         dimmer_is_on = (seconds > DIMMER_START_HOUR * SECONDS_PER_HOUR ||
                         seconds < DIMMER_END_HOUR * SECONDS_PER_HOUR);
 
         compute_digits( digits );
         put_digits( digits );
 
-        if( dimmer_is_on && dimmer_phase == 0 ) {
+        if( dimmer_is_on && dimmer_phase != 0 ) {
             cbi(PORTD,OE);
         } else {
             sbi(PORTD,OE);
