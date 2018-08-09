@@ -126,7 +126,7 @@ ISR( TIMER1_COMPA_vect )
 
 void compute_digits( volatile unsigned short digits[] )
 {
-#if 1
+#if 0
     int whole_minutes = seconds / SECONDS_PER_MINUTE;
     int minutes = whole_minutes % MINUTES_PER_HOUR;
     int hours = whole_minutes / MINUTES_PER_HOUR;
