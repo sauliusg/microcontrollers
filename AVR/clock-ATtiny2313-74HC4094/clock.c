@@ -201,7 +201,7 @@ void setup_timer( void )
     sei();
 }
 
-#define DEBOUNCING_DELAY 50
+#define DEBOUNCING_DELAY 100
 
 unsigned short
 read_buttons( void )
