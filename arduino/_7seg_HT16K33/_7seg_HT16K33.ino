@@ -28,7 +28,8 @@
 #endif
 
 
-Adafruit_LEDBackpack matrix = Adafruit_LEDBackpack();
+//Adafruit_LEDBackpack matrix = Adafruit_LEDBackpack();
+Adafruit_7segment matrix = Adafruit_7segment();
 
 uint8_t counter = 0;
 
@@ -40,17 +41,48 @@ void setup() {
 }
 
 void loop() {
-  // paint one LED per row. The HT16K33 internal memory looks like
-  // a 8x16 bit matrix (8 rows, 16 columns)
-  for (uint8_t i=0; i<8; i++) {
-    // draw a diagonal row of pixels
-    matrix.displaybuffer[i] = _BV((counter+i) % 16) | _BV((counter+i+8) % 16)  ;
-  }
-  // write the changes we just made to the display
+  // try to print a number thats too long
+  matrix.print(10000, DEC);
   matrix.writeDisplay();
-  delay(100);
+  delay(500);
 
-  counter++;
-  if (counter >= 16) counter = 0;  
+  // print a hex number
+  matrix.print(0xBEEF, HEX);
+  matrix.writeDisplay();
+  delay(500);
+
+  // print a floating point 
+  matrix.print(12.34);
+  matrix.writeDisplay();
+  delay(500);
+  
+  // print with print/println
+  for (uint16_t counter = 0; counter < 9999; counter++) {
+    matrix.println(counter);
+    matrix.writeDisplay();
+    delay(10);
+  }
+
+  // method #2 - draw each digit
+  uint16_t blinkcounter = 0;
+  boolean drawDots = false;
+  for (uint16_t counter = 0; counter < 9999; counter ++) {
+    matrix.writeDigitNum(0, (counter / 1000), drawDots);
+    matrix.writeDigitNum(1, (counter / 100) % 10, drawDots);
+    matrix.drawColon(drawDots);
+    matrix.writeDigitNum(3, (counter / 10) % 10, drawDots);
+    matrix.writeDigitNum(4, counter % 10, drawDots);
+   
+    blinkcounter+=50;
+    if (blinkcounter < 500) {
+      drawDots = false;
+    } else if (blinkcounter < 1000) {
+      drawDots = true;
+    } else {
+      blinkcounter = 0;
+    }
+    matrix.writeDisplay();
+    delay(10);
+  }
 }
 
