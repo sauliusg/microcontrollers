@@ -61,7 +61,6 @@ void loop() {
     } else {
       matrix.print(temperature,1);
     }
-    matrix.writeDisplay();
 
     Serial.print("T = ");
     Serial.print(temperature);
@@ -69,13 +68,11 @@ void loop() {
     Serial.print(humidity);
     Serial.print(" ");
   } else {
-    matrix.print('E');
-    matrix.print('r');
-    matrix.print('r');
-    matrix.writeDisplay();
+    matrix.print(0xEEEE, HEX);
     Serial.print("T = ?? ");
     Serial.print("RH = ??");
   }
+  matrix.writeDisplay();
   Serial.println("");
 
   step ++;  
