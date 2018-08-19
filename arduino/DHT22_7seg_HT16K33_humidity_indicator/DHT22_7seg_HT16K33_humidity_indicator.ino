@@ -43,7 +43,7 @@ void setup() {
   matrix.begin(0x70);  // pass in the address
 }
 
-int step = 0;                                                                                                                                               
+unsigned int step = 0;                                                                                                                                               
 
 void loop() {
 
@@ -56,7 +56,11 @@ void loop() {
   if( chk_dht22 == DHTLIB_OK ) {
     double temperature = DHT22.temperature;
     double humidity = DHT22.humidity;
-    matrix.print(humidity,1);
+    if( step & 0x0002 ) {
+      matrix.print(humidity,1);
+    } else {
+      matrix.print(temperature,1);
+    }
     matrix.writeDisplay();
 
     Serial.print("T = ");
