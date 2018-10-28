@@ -22,7 +22,6 @@
 #include <Wire.h>
 #include "Adafruit_LEDBackpack.h"
 #include "Adafruit_GFX.h"
-#include <dht.h>
 
 #ifndef _BV
   #define _BV(bit) (1<<(bit))
@@ -32,45 +31,45 @@
 //Adafruit_LEDBackpack matrix = Adafruit_LEDBackpack();
 Adafruit_7segment matrix = Adafruit_7segment();
 
-#define DHT22_PIN 7
-
-dht DHT22;
+const uint8_t FS2012_I2C_addr = 0x07; // Specified in the FS2012 datasheet, p. 6
+                                      // https://www.idt.com/document/dst/fs2012-datasheet
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("DHT22 humidity sensor");
+  Serial.println("FS2012 Flow Meter test");
   
   matrix.begin(0x70);  // pass in the address
+  Wire.begin();
 }
 
 unsigned int step = 0;                                                                                                                                               
 
 void loop() {
 
-  int chk_dht22 = DHT22.read(DHT22_PIN);
-
-  Serial.print("DHT22(");
+  Serial.print("FS2012 ");
   Serial.print(step+1);
-  Serial.print("): ");
+  Serial.print(": ");
 
-  if( chk_dht22 == DHTLIB_OK ) {
-    double temperature = DHT22.temperature;
-    double humidity = DHT22.humidity;
-    if( step & 0x0002 ) {
-      matrix.print(humidity,1);
-    } else {
-      matrix.print(temperature,1);
-    }
+  int ok = 1;
+  if( ok ) {
+    double flow;
 
-    Serial.print("T = ");
-    Serial.print(temperature);
-    Serial.print(" RH = ");
-    Serial.print(humidity);
-    Serial.print(" ");
+    Wire.beginTransmission( FS2012_I2C_addr );
+    // request two bytes from the flow meter:
+    Wire.requestFrom( FS2012_I2C_addr, (uint8_t)2 );
+    unsigned int msb = Wire.read();
+    unsigned int lsb = Wire.read();
+    Wire.endTransmission();
+
+    flow = ((msb << 8) | lsb)/1000.0;
+
+    matrix.print(flow);
+
+    Serial.print("Flow = ");
+    Serial.print(flow);
   } else {
     matrix.print(0xEEEE, HEX);
-    Serial.print("T = ?? ");
-    Serial.print("RH = ??");
+    Serial.print("Flow = ?? ");
   }
   matrix.writeDisplay();
   Serial.println("");
