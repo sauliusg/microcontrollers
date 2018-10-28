@@ -70,13 +70,13 @@ void loop() {
     unsigned int iflow = (msb << 8) | lsb;
     flow = iflow/1000.0;
 
-    if( step % 3 == 0 ) {
+    //if( step % 3 == 0 ) {
       matrix.print(flow);
-    } else if( step % 3 == 1 ) {
-      matrix.print(iflow); 
-    } else {
-      matrix.print(iflow, HEX); 
-    }
+    //} else if( step % 3 == 1 ) {
+    //  matrix.print(iflow); 
+    //} else {
+    //  matrix.print(iflow, HEX); 
+    //}
 
     Serial.print("Flow = ");
     Serial.print(flow);
@@ -88,6 +88,6 @@ void loop() {
   Serial.println("");
 
   step ++;  
-  delay(2000);
+  delay(1000);
 }
 
