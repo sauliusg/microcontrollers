@@ -72,13 +72,13 @@ void loop() {
     unsigned int iflow = (msb << 8) | lsb;
     flow = iflow/1000.0;
 
-    matrix.print(flow);
+    matrix.print(flow, 3);
 
     Serial.print("iflow = ");
     Serial.print(iflow);
     Serial.print(" ");
     Serial.print("Flow = ");
-    Serial.print(flow);
+    Serial.print(flow, 3);
   } else {
     matrix.print(0xEEEE, HEX);
     Serial.print("Flow = ?? ");
