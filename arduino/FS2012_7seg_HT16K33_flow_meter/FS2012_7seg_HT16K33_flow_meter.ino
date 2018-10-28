@@ -63,6 +63,8 @@ void loop() {
     while(Wire.available() == 0);
     unsigned int msb = Wire.read();
     unsigned int lsb = Wire.read();
+    Serial.print( "msb = 0x" ); Serial.print( msb, HEX ); Serial.print( ", " );
+    Serial.print( "lsb = 0x" ); Serial.print( lsb, HEX ); Serial.print( ", " );
     Wire.endTransmission();
     // Another example available at
     // https://www.arduino.cc/en/Reference/WireRead (S.G.).
@@ -70,14 +72,11 @@ void loop() {
     unsigned int iflow = (msb << 8) | lsb;
     flow = iflow/1000.0;
 
-    //if( step % 3 == 0 ) {
-      matrix.print(flow);
-    //} else if( step % 3 == 1 ) {
-    //  matrix.print(iflow); 
-    //} else {
-    //  matrix.print(iflow, HEX); 
-    //}
+    matrix.print(flow);
 
+    Serial.print("iflow = ");
+    Serial.print(iflow);
+    Serial.print(" ");
     Serial.print("Flow = ");
     Serial.print(flow);
   } else {
