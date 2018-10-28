@@ -67,7 +67,7 @@ void loop() {
     // Another example available at
     // https://www.arduino.cc/en/Reference/WireRead (S.G.).
 
-    int iflow = (msb << 8) | lsb;
+    unsigned int iflow = (msb << 8) | lsb;
     flow = iflow/1000.0;
 
     if( step % 3 == 0 ) {
