@@ -55,15 +55,28 @@ void loop() {
     double flow;
 
     Wire.beginTransmission( FS2012_I2C_addr );
+    // Following example at
+    // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
     // request two bytes from the flow meter:
     Wire.requestFrom( FS2012_I2C_addr, (uint8_t)2 );
+    // wait for response:
+    while(Wire.available() == 0);
     unsigned int msb = Wire.read();
     unsigned int lsb = Wire.read();
     Wire.endTransmission();
+    // Another example available at
+    // https://www.arduino.cc/en/Reference/WireRead (S.G.).
 
-    flow = ((msb << 8) | lsb)/1000.0;
+    int iflow = (msb << 8) | lsb;
+    flow = iflow/1000.0;
 
-    matrix.print(flow);
+    if( step % 3 == 0 ) {
+      matrix.print(flow);
+    } else if( step % 3 == 1 ) {
+      matrix.print(iflow); 
+    } else {
+      matrix.print(iflow, HEX); 
+    }
 
     Serial.print("Flow = ");
     Serial.print(flow);
