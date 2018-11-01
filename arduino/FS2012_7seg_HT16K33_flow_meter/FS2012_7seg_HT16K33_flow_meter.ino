@@ -42,7 +42,13 @@ void setup() {
   Wire.begin();
 }
 
-unsigned int step = 0;                                                                                                                                               
+unsigned int step = 0;
+
+// Scaling factor to convert integer from the FS2012 sensor to a floating point 
+// number in L/min. For FS2012-{1020,1100}-NG the factor is 1/1000 (for
+// the ...-LQ units tha factor would be 1/10):
+
+double scale = 1000.0;
 
 void loop() {
 
@@ -70,7 +76,7 @@ void loop() {
     // https://www.arduino.cc/en/Reference/WireRead (S.G.).
 
     unsigned int iflow = (msb << 8) | lsb;
-    flow = iflow/1000.0;
+    flow = iflow/scale;
 
     matrix.print(flow, 3);
 
@@ -87,6 +93,6 @@ void loop() {
   Serial.println("");
 
   step ++;  
-  delay(1000);
+  delay(5000);
 }
 
