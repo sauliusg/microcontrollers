@@ -46,7 +46,8 @@ unsigned int step = 0;
 
 // Scaling factor to convert integer from the FS2012 sensor to a
 // floating point number in L/min. For FS2012-{1020,1100}-NG the scale
-// divisor is 1000 (for the ...-LQ units tha factor would be 10)
+// divisor is 1000 (for the ...-LQ sensors the factor would be 10),
+// see https://www.idt.com/document/dst/fs2012-datasheet
 // (S.G.):
 
 double scale = 1000.0;
