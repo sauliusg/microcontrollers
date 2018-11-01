@@ -45,8 +45,8 @@ void setup() {
 unsigned int step = 0;
 
 // Scaling factor to convert integer from the FS2012 sensor to a floating point 
-// number in L/min. For FS2012-{1020,1100}-NG the factor is 1/1000 (for
-// the ...-LQ units tha factor would be 1/10):
+// number in L/min. For FS2012-{1020,1100}-NG the scale divisor is 1000 (for
+// the ...-LQ units tha factor would be 10):
 
 double scale = 1000.0;
 
