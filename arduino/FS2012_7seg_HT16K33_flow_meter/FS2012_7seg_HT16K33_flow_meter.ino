@@ -93,6 +93,6 @@ void loop() {
   Serial.println("");
 
   step ++;  
-  delay(5000);
+  delay(2000);
 }
 
