@@ -71,7 +71,7 @@ void loop()
   //WriteNumberToSegment( 0, 1 );
   //WriteNumberToSegment( 1, 2 );
   //WriteNumberToSegment( 2, 3 );
-  WriteNumberToSegment( 3, counter%10 );
+  WriteNumberToSegment( 3, 5 );
   delay(1000);
   counter ++;
 }
