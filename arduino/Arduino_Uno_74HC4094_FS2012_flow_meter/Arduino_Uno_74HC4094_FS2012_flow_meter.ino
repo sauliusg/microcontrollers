@@ -60,8 +60,10 @@ void loop()
 {
   digitalWrite(OE,HIGH);
   /* Update the display with the current counter value */
+  int tens_power = 100;
   for( int i = 0; i < 8; i++ ) {
-    WriteNumberToSegment( i, i );
+    WriteNumberToSegment( i, (counter/tens_power)%10 );
+    tens_power *= 10;
   }
   counter ++;
 }
