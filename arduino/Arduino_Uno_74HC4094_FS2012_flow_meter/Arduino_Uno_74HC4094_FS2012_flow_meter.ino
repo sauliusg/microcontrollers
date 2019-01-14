@@ -65,7 +65,7 @@ void loop()
     WriteNumberToSegment( i, (counter/tens_power)%10 );
     tens_power *= 10;
   }
-  counter ++;
+  counter --;
 }
 
 /* Write a decimal number between 0 and 9 to one of the 4 digits of the display */
