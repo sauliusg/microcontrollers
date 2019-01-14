@@ -61,8 +61,8 @@ void loop()
   digitalWrite(OE,HIGH);
   /* Update the display with the current counter value */
   for( int i = 0; i < 8; i++ ) {
-    WriteNumberToSegment( i, counter%10 );
-    delay(200);
+    WriteNumberToSegment( i, i );
+    delay(1);
   }
   counter ++;
 }
