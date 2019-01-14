@@ -54,13 +54,13 @@ void setup()
   pinMode(OE,OUTPUT);
 }
 
-unsigned int counter = 0;
+unsigned long long counter = 0;
 
 void loop()
 {
   digitalWrite(OE,HIGH);
   /* Update the display with the current counter value */
-  unsigned int tens_power = 100;
+  unsigned long long tens_power = 100;
   for( int i = 0; i < 8; i++ ) {
     WriteNumberToSegment( i, (counter/tens_power)%10 );
     tens_power *= 10;
