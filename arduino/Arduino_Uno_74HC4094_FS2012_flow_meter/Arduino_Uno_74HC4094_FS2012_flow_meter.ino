@@ -1,3 +1,5 @@
+#include <SlowSoftI2CMaster.h>
+
 /* Define shift register pins used for seven segment display */
 #define LATCH_DIO 10
 #define CLK_DIO   14
