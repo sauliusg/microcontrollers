@@ -1,5 +1,9 @@
 #include <SlowSoftI2CMaster.h>
 
+#define I2C1_7BITADDR 0x07 // FS2012
+#define I2C1_SCL 8
+#define I2C1_SDA 7
+
 /* Define shift register pins used for seven segment display */
 #define LATCH_DIO 10
 #define CLK_DIO   14
@@ -46,6 +50,8 @@ const byte SEGMENT_SELECT[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 void WriteNumberToSegment(byte Segment, byte Value);
 
+SlowSoftI2CMaster si1 = SlowSoftI2CMaster(I2C1_SDA, I2C1_SCL, /*internal_pullups=*/true);
+
 void setup()
 {
   // initialize the digital pin as an output.
@@ -54,20 +60,31 @@ void setup()
   pinMode(CLK_DIO,OUTPUT);
   pinMode(DATA_DIO,OUTPUT);
   pinMode(OE,OUTPUT);
+  
+  Serial.begin(9600);
+  Serial.println("FS2012 Flow Meter test (Soft I2C)");
 }
-
-unsigned long long counter = 0;
 
 void loop()
 {
+  if (!si1.i2c_start((I2C1_7BITADDR<<1)|I2C_WRITE)) { // init transfer
+      Serial.println("I2C device busy");
+  }
+  si1.i2c_rep_start((I2C1_7BITADDR<<1)|I2C_READ); // restart for reading
+  byte msb = si1.i2c_read(true); // read one byte
+  byte lsb = si1.i2c_read(true); // read one byte and send NAK afterwards
+  unsigned int iflow = (msb << 8) | lsb;
+  si1.i2c_stop(); // stop communication
+  Serial.println(iflow);
+  
   digitalWrite(OE,HIGH);
   /* Update the display with the current counter value */
-  unsigned long long tens_power = 100;
+  unsigned long long tens_power = 1;
   for( int i = 0; i < 8; i++ ) {
-    WriteNumberToSegment( i, (counter/tens_power)%10 );
+    WriteNumberToSegment( i, (iflow/tens_power)%10 );
     tens_power *= 10;
+    delay(1);
   }
-  counter --;
 }
 
 /* Write a decimal number between 0 and 9 to one of the 4 digits of the display */
