@@ -1,8 +1,8 @@
-#include <SlowSoftI2CMaster.h>
+#include <Wire.h>
 
 #define I2C1_7BITADDR 0x07 // FS2012
-#define I2C1_SCL 8
-#define I2C1_SDA 7
+//#define I2C1_SCL 8
+//#define I2C1_SDA 7
 
 /* Define shift register pins used for seven segment display */
 #define LATCH_DIO 10
@@ -50,7 +50,7 @@ const byte SEGMENT_SELECT[] = {0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 
 void WriteNumberToSegment(byte Segment, byte Value);
 
-SlowSoftI2CMaster si1 = SlowSoftI2CMaster(I2C1_SDA, I2C1_SCL, /*internal_pullups=*/true);
+//SlowSoftI2CMaster si1 = SlowSoftI2CMaster(I2C1_SDA, I2C1_SCL, /*internal_pullups=*/true);
 
 void setup()
 {
@@ -67,20 +67,46 @@ void setup()
 
 void loop()
 {
-  if (!si1.i2c_start((I2C1_7BITADDR<<1)|I2C_WRITE)) { // init transfer
-      Serial.println("I2C device busy");
-  }
-  si1.i2c_rep_start((I2C1_7BITADDR<<1)|I2C_READ); // restart for reading
-  byte msb = si1.i2c_read(true); // read one byte
-  byte lsb = si1.i2c_read(true); // read one byte and send NAK afterwards
+//  if (!si1.i2c_start((I2C1_7BITADDR<<1)|I2C_WRITE)) { // init transfer
+//      Serial.println("I2C device busy");
+//  }
+//  si1.i2c_rep_start((I2C1_7BITADDR<<1)|I2C_READ); // restart for reading
+//  byte msb = si1.i2c_read(true); // read one byte
+//  byte lsb = si1.i2c_read(true); // read one byte and send NAK afterwards
+//  si1.i2c_stop(); // stop communication
+
+  Wire.beginTransmission( I2C1_7BITADDR );
+  // Following example at
+  // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
+  // request two bytes from the flow meter:
+  Wire.requestFrom( (uint8_t)I2C1_7BITADDR, (uint8_t)2 );
+  // wait for response:
+//  while(Wire.available() == 0);
+  unsigned int msb = Wire.read();
+  unsigned int lsb = Wire.read();
+  Serial.print( "msb = 0x" ); Serial.print( msb, HEX ); Serial.print( ", " );
+  Serial.print( "lsb = 0x" ); Serial.print( lsb, HEX ); Serial.print( ", " );
+  Wire.endTransmission();
+  // Another example available at
+  // https://www.arduino.cc/en/Reference/WireRead (S.G.).
+
   unsigned int iflow = (msb << 8) | lsb;
-  si1.i2c_stop(); // stop communication
+  unsigned int aflow = analogRead(A0);
+  
+  Serial.print("analog: ");
+  Serial.print(aflow);
+  Serial.print(" digital: ");
   Serial.println(iflow);
   
   digitalWrite(OE,HIGH);
   /* Update the display with the current counter value */
   unsigned long long tens_power = 1;
-  for( int i = 0; i < 8; i++ ) {
+  for( int i = 0; i < 4; i++ ) {
+    WriteNumberToSegment( i, (aflow/tens_power)%10 );
+    tens_power *= 10;
+    delay(1);
+  }
+  for( int i = 4; i < 5; i++ ) {
     WriteNumberToSegment( i, (iflow/tens_power)%10 );
     tens_power *= 10;
     delay(1);
