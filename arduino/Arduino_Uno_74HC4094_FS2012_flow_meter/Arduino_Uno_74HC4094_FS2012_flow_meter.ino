@@ -1,4 +1,3 @@
-//#include <Wire.h>
 #include <SlowSoftI2CMaster.h>
 
 #define I2C1_7BITADDR 0x07 // FS2012
@@ -80,21 +79,6 @@ unsigned long long count;
 
 void loop()
 {
-//  Wire.beginTransmission( I2C1_7BITADDR );
-//  // Following example at
-//  // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
-//  // request two bytes from the flow meter:
-//  Wire.requestFrom( (uint8_t)I2C1_7BITADDR, (uint8_t)2 );
-//  // wait for response:
-////  while(Wire.available() == 0);
-//  unsigned int msb = Wire.read();
-//  unsigned int lsb = Wire.read();
-//  Serial.print( "msb = 0x" ); Serial.print( msb, HEX ); Serial.print( ", " );
-//  Serial.print( "lsb = 0x" ); Serial.print( lsb, HEX ); Serial.print( ", " );
-//  Wire.endTransmission();
-  // Another example available at
-  // https://www.arduino.cc/en/Reference/WireRead (S.G.).
-
   if( count % 100 == 0 ) { 
     if (!si1.i2c_start((I2C1_7BITADDR<<1)|I2C_WRITE)) { // init transfer
         Serial.println("I2C 1st device busy");
