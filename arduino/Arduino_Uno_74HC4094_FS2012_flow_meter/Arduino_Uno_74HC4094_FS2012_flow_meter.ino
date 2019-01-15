@@ -17,7 +17,7 @@
 // Relay control pins:
 
 #define RELAY1 A2
-#define RELAY2 15
+#define RELAY2 A3
 
 // Input button:
 
