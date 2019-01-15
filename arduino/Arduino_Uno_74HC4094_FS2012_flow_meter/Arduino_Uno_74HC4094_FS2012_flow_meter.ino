@@ -14,6 +14,15 @@
 #define DATA_DIO  16
 #define OE         9
 
+// Relay control pins:
+
+#define RELAY1 A2
+#define RELAY2 A3
+
+// Input button:
+
+#define BUTTON 8
+
 /*
  Segment layout -- segments are assigned to the shifter
  parallel output pins:
@@ -65,6 +74,14 @@ void setup()
   pinMode(CLK_DIO,OUTPUT);
   pinMode(DATA_DIO,OUTPUT);
   pinMode(OE,OUTPUT);
+
+  pinMode(RELAY1,OUTPUT);
+  pinMode(RELAY2,OUTPUT);
+
+  pinMode(BUTTON,INPUT);
+
+  digitalWrite(RELAY1,LOW);
+  digitalWrite(RELAY2,LOW);
   
   Serial.begin(9600);
   Serial.println("FS2012 Flow Meter test (Soft I2C)");
@@ -75,27 +92,37 @@ unsigned int aflow;
 unsigned int iflow_2;
 unsigned int aflow_2;
 
+byte button;
+
 unsigned long long count;
 
 void loop()
 {
+  button = digitalRead(BUTTON);
+
   if( count % 100 == 0 ) { 
+
+    byte msb, lsb;
+    byte msb_2, lsb_2;
+  
     if (!si1.i2c_start((I2C1_7BITADDR<<1)|I2C_WRITE)) { // init transfer
         Serial.println("I2C 1st device busy");
+    } else {
+      si1.i2c_rep_start((I2C1_7BITADDR<<1)|I2C_READ); // restart for reading
+      msb = si1.i2c_read(false); // read one byte
+      lsb = si1.i2c_read(true); // read one byte and send NAK afterwards
+      si1.i2c_stop(); // stop communication
     }
-    si1.i2c_rep_start((I2C1_7BITADDR<<1)|I2C_READ); // restart for reading
-    byte msb = si1.i2c_read(false); // read one byte
-    byte lsb = si1.i2c_read(true); // read one byte and send NAK afterwards
-    si1.i2c_stop(); // stop communication
   
     if (!si2.i2c_start((I2C2_7BITADDR<<1)|I2C_WRITE)) { // init transfer
         Serial.println("I2C 2nd device busy");
+    } else {
+      si2.i2c_rep_start((I2C2_7BITADDR<<1)|I2C_READ); // restart for reading
+      msb_2 = si2.i2c_read(false); // read one byte
+      lsb_2 = si2.i2c_read(true); // read one byte and send NAK afterwards
+      si2.i2c_stop(); // stop communication
     }
-    si2.i2c_rep_start((I2C2_7BITADDR<<1)|I2C_READ); // restart for reading
-    byte msb_2 = si2.i2c_read(false); // read one byte
-    byte lsb_2 = si2.i2c_read(true); // read one byte and send NAK afterwards
-    si2.i2c_stop(); // stop communication
-
+    
     iflow = (msb << 8) | lsb;
     aflow = analogRead(A0);
     iflow_2 = (msb_2 << 8) | lsb_2;
@@ -109,7 +136,23 @@ void loop()
     Serial.print(aflow_2);
     Serial.print(" digital2: ");
     Serial.print(iflow_2);
+    Serial.print(" button: ");
+    Serial.print(button);
     Serial.println();
+  }
+  
+  // Switch the relay:
+
+  if( iflow < 50 && button ) {
+    digitalWrite(RELAY1,HIGH);
+  } else {
+    digitalWrite(RELAY1,LOW);  
+  }
+  
+  if( iflow_2 < 50 && button ) {
+    digitalWrite(RELAY2,HIGH);
+  } else {
+    digitalWrite(RELAY2,LOW);  
   }
   
   digitalWrite(OE,HIGH);
