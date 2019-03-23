@@ -92,6 +92,9 @@ unsigned int aflow;
 unsigned int iflow_2;
 unsigned int aflow_2;
 
+unsigned int flow_1;
+unsigned int flow_2;
+
 byte button;
 
 unsigned long long count;
@@ -128,6 +131,9 @@ void loop()
     iflow_2 = (msb_2 << 8) | lsb_2;
     aflow_2 = analogRead(A1);
   
+    flow_1 = aflow;
+    flow_2 = aflow_2;
+  
     Serial.print("analog1: ");
     Serial.print(aflow);
     Serial.print(" digital1: ");
@@ -143,13 +149,13 @@ void loop()
   
   // Switch the relay:
 
-  if( iflow < 50 && button ) {
+  if( flow_1 < 50 && button ) {
     digitalWrite(RELAY1,HIGH);
   } else {
     digitalWrite(RELAY1,LOW);  
   }
   
-  if( iflow_2 < 50 && button ) {
+  if( flow_2 < 50 && button ) {
     digitalWrite(RELAY2,HIGH);
   } else {
     digitalWrite(RELAY2,LOW);  
@@ -159,13 +165,13 @@ void loop()
   /* Update the display with the current counter value */
   unsigned long long tens_power = 1;
   for( int i = 0; i < 4; i++ ) {
-    WriteNumberToSegment( i, (iflow/tens_power)%10 );
+    WriteNumberToSegment( i, (flow_1/tens_power)%10 );
     tens_power *= 10;
     delay(1);
   }
   tens_power = 1;
   for( int i = 4; i < 8; i++ ) {
-    WriteNumberToSegment( i, (iflow_2/tens_power)%10 );
+    WriteNumberToSegment( i, (flow_2/tens_power)%10 );
     tens_power *= 10;
     delay(1);
   }
