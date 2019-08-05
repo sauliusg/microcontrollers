@@ -5,6 +5,14 @@
 
 #define BUTTON1 A1
 #define BUTTON2 A2
+#define BUTTON3 A3
+
+#define BUZZER 3
+
+#define ON             LOW
+#define OFF            HIGH
+
+byte current_buzzer = OFF;
 
 /* Segment byte maps for numbers 0 to 9 */
 const byte SEGMENT_MAP[] = {0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0X80,0X90};
@@ -19,6 +27,9 @@ void setup ()
   pinMode(DATA_DIO,OUTPUT);
   pinMode(BUTTON1,INPUT);
   pinMode(BUTTON2,INPUT);  
+  pinMode(BUTTON3,INPUT);  
+  pinMode(BUZZER,OUTPUT);
+  digitalWrite( BUZZER, OFF );
 }
 
 byte write_numbers = 0;
@@ -28,6 +39,10 @@ byte write_numbers = 0;
 int counter = 0;
 byte digit = 0;
 byte segmentMap = 1;
+
+#define DEBOUNCING_LIMIT 200
+
+byte debouncing_counter;
 
 /* Main program */
 void loop()
@@ -60,6 +75,22 @@ void loop()
     write_numbers = 1;
   if( b2 == 0 )
     write_numbers = 0;
+  byte b3 = digitalRead( BUTTON3 );
+  if( b3 == 0 ) {
+    // Button 3 pressed:
+    if( debouncing_counter == 0 ) {
+      debouncing_counter = DEBOUNCING_LIMIT; 
+      if( current_buzzer == ON ) {
+        current_buzzer = OFF;
+      } else {
+        current_buzzer = ON;
+      }
+      digitalWrite( BUZZER, current_buzzer );
+    }
+  }
+  if( debouncing_counter != 0 ) {
+    debouncing_counter --;
+  }
 }
 
 /* Write a decimal number between 0 and 9 to one of the 4 digits of the display */
