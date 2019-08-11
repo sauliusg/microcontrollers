@@ -83,7 +83,7 @@ void setup ()
   output_max7219( 0x04, SEGMENT_MAP[3] );
 
   output_max7219( 0x05, SEGMENT_MAP[4] );
-  output_max7219( 0x06, SEGMENT_MAP[0] );
+  output_max7219( 0x06, SEGMENT_MAP[5] );
   output_max7219( 0x07, SEGMENT_MAP[6] );
   output_max7219( 0x08, SEGMENT_MAP[7] );
 
