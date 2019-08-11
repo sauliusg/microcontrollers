@@ -89,10 +89,12 @@ void setup ()
 
   //pinMode(LED, OUTPUT);
   //digitalWrite(LED, LOW);
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 int count;
+
+byte digits[] = {1,2,3,4,5,6,7,8,9,0};
 
 /* Main program */
 void loop()
@@ -101,6 +103,17 @@ void loop()
   byte max7219_register = 0x01; // Digit address (RAM "register")
   byte digit_value = SEGMENT_MAP[digit]; // Segment layout for the digit to display
   uint16_t payload = ((uint16_t)max7219_register << 8) | digit_value;
+
+  if( digit == 0 && count % 10 == 0 ) {
+    byte first_digit = digits[0];
+    for( byte i = 0; i < 9; i++ ) {
+      digits[i] = digits[i+1]; 
+    }
+    digits[9] = first_digit;
+    for( byte i = 0; i < 8; i++ ) {
+        output_max7219( i+1, SEGMENT_MAP[digits[i]] ); 
+    }
+  }
 
   // See https://www.arduino.cc/en/Reference/SPI for an example:
   // SPI.beginTransaction(SPISettings(5000000, MSBFIRST, SPI_MODE0));
