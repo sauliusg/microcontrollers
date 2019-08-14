@@ -12,7 +12,7 @@ const byte SEGMENT_MAP[] = {0x7E,0x30,0x6D,0x79,0x33,0x5B,0x5F,0x70,0x7F,0x7B};
 
 #define DECIMAL_POINT 0x80;
 
-SPISettings spi_settings = SPISettings(500000, MSBFIRST, SPI_MODE0);
+SPISettings spi_settings = SPISettings(5000000, MSBFIRST, SPI_MODE0);
 
 void output_max7219( byte reg, byte data )
 {
