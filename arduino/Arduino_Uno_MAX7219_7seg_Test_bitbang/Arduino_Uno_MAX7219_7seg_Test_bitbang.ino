@@ -1,13 +1,8 @@
-// #include <SPI.h>
-
 /* Chip (Slave) select pin: */
 #define CS 9
 
 #define DATA 11
 #define CLK  13
-
-/* LED: */
-// #define LED 13
 
 /* Segment byte maps for numbers 0 to 9, "1" bit means segment is ON: */
 //                           "0"  "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"
@@ -60,7 +55,6 @@ void output_max7219_16( uint16_t payload )
 
 void setup ()
 {
-  //SPI.begin();
   pinMode(CS, OUTPUT); 
   pinMode(DATA, OUTPUT); 
   pinMode(CLK, OUTPUT); 
@@ -69,13 +63,13 @@ void setup ()
   output_max7219( 0x09, 0x00 ); // Not decoding any digits
   output_max7219( 0x0A, 0xFF ); // Set intensity to max.
 
-  output_max7219( 0x0C, 0x00 ); // Shutdown?
-  output_max7219( 0x0C, 0x01 ); // Wake-up after a shutdown?
-  output_max7219( 0x0F, 0xFF ); // Test?
-  output_max7219( 0x0F, 0xFE ); // Normal mode?
+  output_max7219( 0x0C, 0x00 ); // Shutdown
+  output_max7219( 0x0C, 0x01 ); // Wake-up after a shutdown
+  output_max7219( 0x0F, 0xFF ); // Test
+  output_max7219( 0x0F, 0xFE ); // Normal mode
   delay(10);
-  output_max7219( 0x0F, 0xFF ); // Test?
-  output_max7219( 0x0F, 0xFE ); // Normal mode?
+  output_max7219( 0x0F, 0xFF ); // Test
+  output_max7219( 0x0F, 0xFE ); // Normal mode
 
   output_max7219( 0x01, SEGMENT_MAP[0] );
   output_max7219( 0x02, SEGMENT_MAP[1] );
@@ -86,10 +80,6 @@ void setup ()
   output_max7219( 0x06, SEGMENT_MAP[5] );
   output_max7219( 0x07, SEGMENT_MAP[6] );
   output_max7219( 0x08, SEGMENT_MAP[7] );
-
-  //pinMode(LED, OUTPUT);
-  //digitalWrite(LED, LOW);
-  //Serial.begin(9600);
 }
 
 int count;
@@ -115,18 +105,11 @@ void loop()
     }
   }
 
-  // See https://www.arduino.cc/en/Reference/SPI for an example:
-  // SPI.beginTransaction(SPISettings(5000000, MSBFIRST, SPI_MODE0));
-
 //  Serial.print( max7219_register, HEX );
 //  Serial.print( " " );
 //  Serial.print( digit_value, HEX );
 //  Serial.print( " " );
 //  Serial.println( payload, HEX );
-
-  //SPI.transfer16(payload);
-  //SPI.transfer(max7219_register);
-  //SPI.transfer(digit_value);
 
   // Trying to bit-bang:
   if( 0 ) {
@@ -135,8 +118,6 @@ void loop()
     output_max7219( max7219_register, digit_value );
   }
   
-  //SPI.endTransaction();
-
   count ++;
 
   delay( 10 );
