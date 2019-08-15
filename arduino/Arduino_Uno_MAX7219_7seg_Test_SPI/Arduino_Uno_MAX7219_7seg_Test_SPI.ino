@@ -83,7 +83,7 @@ void loop()
     }
   }
 
-  if( 0 ) {
+  if( 1 ) {
     output_max7219_16( payload );
   } else {
     output_max7219( max7219_register, digit_value );
