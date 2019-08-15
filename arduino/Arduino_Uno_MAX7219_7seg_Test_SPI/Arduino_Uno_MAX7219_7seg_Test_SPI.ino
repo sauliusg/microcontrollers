@@ -1,7 +1,7 @@
 #include <SPI.h>
 
 /* Chip (Slave) select pin: */
-#define CS 9
+#define CS 10
 
 #define DATA 11
 #define CLK  13
