@@ -3,9 +3,6 @@
 /* Chip (Slave) select pin: */
 #define CS 10
 
-#define DATA 11
-#define CLK  13
-
 /* Segment byte maps for numbers 0 to 9, "1" bit means segment is ON: */
 //                           "0"  "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"
 const byte SEGMENT_MAP[] = {0x7E,0x30,0x6D,0x79,0x33,0x5B,0x5F,0x70,0x7F,0x7B};
