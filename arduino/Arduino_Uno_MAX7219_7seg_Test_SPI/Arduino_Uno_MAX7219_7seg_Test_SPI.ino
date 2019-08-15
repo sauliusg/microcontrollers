@@ -60,7 +60,7 @@ void setup ()
   output_max7219( 0x08, SEGMENT_MAP[7] );
 }
 
-int count;
+unsigned int count;
 
 byte digits[] = {1,2,3,4,5,6,7,8,9,0};
 
