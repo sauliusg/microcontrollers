@@ -1,7 +1,20 @@
 #include <SPI.h>
+#include <Wire.h>
 
-/* Chip (Slave) select pin: */
+/* Chip (Slave) select pin for MAX7219 7-seg driver: */
 #define CS 10
+
+/* TCA9548A I2C multiplexer address: */
+const uint8_t i2c_multiplexer_addr = 0x77;
+
+/* I2C address of *both* flow sensors; sensors will be addressed 
+ * via the TCA9548A I2C multiplexer in channels 2 and 7.
+ */
+const uint8_t FS2012_I2C_addr = 0x07; // Specified in the FS2012 datasheet, p. 6
+                                      // https://www.idt.com/document/dst/fs2012-datasheet
+
+const byte flow_sensor_1_channel = 0x04; // 0000_0100 - channel No. 2 (0-based)
+const byte flow_sensor_2_channel = 0x80; // 1000_0000 - channel No. 7 (0-based)
 
 /* Segment byte maps for numbers 0 to 9, "1" bit means segment is ON: */
 //                           "0"  "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"
@@ -35,6 +48,9 @@ void output_max7219_16( uint16_t payload )
 void setup ()
 {
   SPI.begin();
+  Wire.begin();
+  Serial.begin(9600);
+
   pinMode(CS, OUTPUT); 
 
   output_max7219( 0x0B, 0x0F ); // Set scan to all digits
@@ -60,19 +76,21 @@ void setup ()
   output_max7219( 0x08, SEGMENT_MAP[7] );
 }
 
-unsigned int count;
+// Scaling factor to convert integer from the FS2012 sensor to a
+// floating point number in L/min. For FS2012-{1020,1100}-NG the scale
+// divisor is 1000 (for the ...-LQ sensors the factor would be 10),
+// see https://www.idt.com/document/dst/fs2012-datasheet
+// (S.G.):
+
+double scale = 1000.0;
 
 byte digits[] = {1,2,3,4,5,6,7,8,9,0};
 
 /* Main program */
 void loop()
 {
-  byte digit = (count / 10) % 10;
-  byte max7219_register = 0x01; // Digit address (RAM "register")
-  byte digit_value = SEGMENT_MAP[digit]; // Segment layout for the digit to display
-  uint16_t payload = ((uint16_t)max7219_register << 8) | digit_value;
 
-  if( digit == 0 && count % 10 == 0 ) {
+  if( 1 ) {
     byte first_digit = digits[0];
     for( byte i = 0; i < 9; i++ ) {
       digits[i] = digits[i+1]; 
@@ -82,15 +100,79 @@ void loop()
         output_max7219( i+1, SEGMENT_MAP[digits[i]] ); 
     }
   }
-
-  if( 1 ) {
-    output_max7219_16( payload );
-  } else {
-    output_max7219( max7219_register, digit_value );
-  }
   
-  count ++;
+  unsigned int msb, lsb;
 
-  delay( 10 );
+  {
+    // Select the first FS2012 flow meter:
+    Wire.beginTransmission( i2c_multiplexer_addr );
+    Wire.write( flow_sensor_1_channel );
+    Wire.endTransmission();
+    Serial.print( "FS2012 sensor 1 selected;" );
+  
+    // Read the sensor:
+    Wire.beginTransmission( FS2012_I2C_addr );
+    // Following example at
+    // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
+    // request two bytes from the flow meter:
+    Wire.requestFrom( FS2012_I2C_addr, (uint8_t)2 );
+    // wait for response:
+    while(Wire.available() == 0);
+    msb = Wire.read();
+    lsb = Wire.read();
+    Serial.print( "msb = 0x" ); Serial.print( msb, HEX ); Serial.print( ", " );
+    Serial.print( "lsb = 0x" ); Serial.print( lsb, HEX ); Serial.print( ", " );
+    Wire.endTransmission();
+  
+    unsigned int iflow1 = (msb << 8) | lsb;
+    double flow1 = iflow1/scale;
+  
+    //matrix.print(flow, 3);
+  
+    Serial.print("iflow1 = ");
+    Serial.print(iflow1);
+    Serial.print(" ");
+    Serial.print("Flow1 = ");
+    Serial.print(flow1, 3);
+
+    Serial.println("");
+  }
+
+  {
+    // Select the second FS2012 flow meter:
+    Wire.beginTransmission( i2c_multiplexer_addr );
+    Wire.write( flow_sensor_2_channel );
+    Wire.endTransmission();
+    Serial.print( "FS2012 sensor 2 selected;" );
+  
+    // Read the sensor:
+    Wire.beginTransmission( FS2012_I2C_addr );
+    // Following example at
+    // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
+    // request two bytes from the flow meter:
+    Wire.requestFrom( FS2012_I2C_addr, (uint8_t)2 );
+    // wait for response:
+    while(Wire.available() == 0);
+    msb = Wire.read();
+    lsb = Wire.read();
+    Serial.print( "msb = 0x" ); Serial.print( msb, HEX ); Serial.print( ", " );
+    Serial.print( "lsb = 0x" ); Serial.print( lsb, HEX ); Serial.print( ", " );
+    Wire.endTransmission();
+    
+    unsigned int iflow2 = (msb << 8) | lsb;
+    double flow2 = iflow2/scale;
+  
+    //matrix.print(flow, 3);
+  
+    Serial.print("iflow2 = ");
+    Serial.print(iflow2);
+    Serial.print(" ");
+    Serial.print("Flow2 = ");
+    Serial.print(flow2, 3);
+
+    Serial.println("");
+  }
+
+  delay( 500 );
 }
  
