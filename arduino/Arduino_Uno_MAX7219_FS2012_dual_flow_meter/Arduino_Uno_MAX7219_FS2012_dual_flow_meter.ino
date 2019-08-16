@@ -20,7 +20,7 @@ const byte flow_sensor_2_channel = 0x80; // 1000_0000 - channel No. 7 (0-based)
 //                           "0"  "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"
 const byte SEGMENT_MAP[] = {0x7E,0x30,0x6D,0x79,0x33,0x5B,0x5F,0x70,0x7F,0x7B};
 
-#define DECIMAL_POINT 0x80;
+#define DECIMAL_POINT 0x80
 
 SPISettings spi_settings = SPISettings(5000000, MSBFIRST, SPI_MODE0);
 
@@ -84,24 +84,11 @@ void setup ()
 
 double scale = 1000.0;
 
-byte digits[] = {1,2,3,4,5,6,7,8,9,0};
-
 /* Main program */
 void loop()
 {
-
-  if( 1 ) {
-    byte first_digit = digits[0];
-    for( byte i = 0; i < 9; i++ ) {
-      digits[i] = digits[i+1]; 
-    }
-    digits[9] = first_digit;
-    for( byte i = 0; i < 8; i++ ) {
-        output_max7219( i+1, SEGMENT_MAP[digits[i]] ); 
-    }
-  }
-  
   unsigned int msb, lsb;
+  byte digits[8];
 
   {
     // Select the first FS2012 flow meter:
@@ -126,9 +113,15 @@ void loop()
   
     unsigned int iflow1 = (msb << 8) | lsb;
     double flow1 = iflow1/scale;
-  
-    //matrix.print(flow, 3);
-  
+
+    // Convert to indicator digits:
+    unsigned int quotient = iflow1;
+    for( int i = 0; i < 4; i++ ) {
+      byte digit = quotient % 10;
+      quotient /= 10;
+      digits[i+4] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
+    }
+
     Serial.print("iflow1 = ");
     Serial.print(iflow1);
     Serial.print(" ");
@@ -162,8 +155,14 @@ void loop()
     unsigned int iflow2 = (msb << 8) | lsb;
     double flow2 = iflow2/scale;
   
-    //matrix.print(flow, 3);
-  
+    // Convert to indicator digits:
+    unsigned int quotient = iflow2;
+    for( int i = 0; i < 4; i++ ) {
+      byte digit = quotient % 10;
+      quotient /= 10;
+      digits[i] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
+    }
+
     Serial.print("iflow2 = ");
     Serial.print(iflow2);
     Serial.print(" ");
@@ -171,6 +170,11 @@ void loop()
     Serial.print(flow2, 3);
 
     Serial.println("");
+  }
+
+  // Send the digits to the indicator:
+  for( byte i = 0; i < 8; i++ ) {
+    output_max7219( i+1, digits[i] ); 
   }
 
   delay( 500 );
