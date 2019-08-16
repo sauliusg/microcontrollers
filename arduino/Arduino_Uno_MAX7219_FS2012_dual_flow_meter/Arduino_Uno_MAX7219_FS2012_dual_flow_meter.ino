@@ -119,7 +119,7 @@ void loop()
     for( int i = 0; i < 4; i++ ) {
       byte digit = quotient % 10;
       quotient /= 10;
-      digits[i+4] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
+      digits[i] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
     }
 
     Serial.print("iflow1 = ");
@@ -160,7 +160,7 @@ void loop()
     for( int i = 0; i < 4; i++ ) {
       byte digit = quotient % 10;
       quotient /= 10;
-      digits[i] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
+      digits[i+4] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
     }
 
     Serial.print("iflow2 = ");
