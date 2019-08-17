@@ -45,6 +45,9 @@ unsigned int read_word_i2c_multiplexed(
   byte i2c_device_address )
 {
   byte msb, lsb;
+  byte count;
+  const byte max_count = 8;
+  byte available = 0;
 
   // Select the first FS2012 flow meter:
   Wire.beginTransmission( i2c_multiplexer_address );
@@ -58,9 +61,16 @@ unsigned int read_word_i2c_multiplexed(
   // request two bytes from the flow meter:
   Wire.requestFrom( i2c_device_address, (uint8_t)2 );
   // wait for response:
-  while(Wire.available() == 0);
-  msb = Wire.read();
-  lsb = Wire.read();
+  count = 0;
+  // Wire.available() will be called at least once:
+  while( (available = Wire.available()) == 0 && count < max_count )
+    count ++;
+  if( available ) {
+    msb = Wire.read();
+    lsb = Wire.read();
+  } else {
+    msb = lsb = 0xFF;
+  }
   Wire.endTransmission();
 
   return (msb << 8) | lsb;
