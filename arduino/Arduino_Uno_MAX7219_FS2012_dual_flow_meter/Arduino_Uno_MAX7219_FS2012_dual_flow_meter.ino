@@ -184,6 +184,6 @@ void loop()
     output_max7219( i+1, digits[i] ); 
   }
 
-  delay( 500 );
+  delay( 2000 );
 }
  
