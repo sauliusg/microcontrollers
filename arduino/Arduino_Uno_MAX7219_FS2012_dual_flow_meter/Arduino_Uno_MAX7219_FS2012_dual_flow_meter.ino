@@ -16,12 +16,6 @@ const uint8_t FS2012_I2C_addr = 0x07; // Specified in the FS2012 datasheet, p. 6
 const byte flow_sensor_1_channel = 0x04; // 0000_0100 - channel No. 2 (0-based)
 const byte flow_sensor_2_channel = 0x80; // 1000_0000 - channel No. 7 (0-based)
 
-/* Segment byte maps for numbers 0 to 9, "1" bit means segment is ON: */
-//                           "0"  "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"
-const byte SEGMENT_MAP[] = {0x7E,0x30,0x6D,0x79,0x33,0x5B,0x5F,0x70,0x7F,0x7B};
-
-#define DECIMAL_POINT 0x80
-
 SPISettings spi_settings = SPISettings(5000000, MSBFIRST, SPI_MODE0);
 
 void output_max7219( byte reg, byte data )
@@ -43,6 +37,53 @@ void output_max7219_16( uint16_t payload )
   SPI.transfer16(payload);
   SPI.endTransaction();
   digitalWrite(CS,HIGH);
+}
+
+unsigned int read_word_i2c_multiplexed(
+  byte channels, 
+  byte i2c_multiplexer_address,
+  byte i2c_device_address )
+{
+  byte msb, lsb;
+
+  // Select the first FS2012 flow meter:
+  Wire.beginTransmission( i2c_multiplexer_address );
+  Wire.write( channels );
+  Wire.endTransmission();
+
+  // Read the sensor:
+  Wire.beginTransmission( i2c_device_address );
+  // Following example at
+  // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
+  // request two bytes from the flow meter:
+  Wire.requestFrom( i2c_device_address, (uint8_t)2 );
+  // wait for response:
+  while(Wire.available() == 0);
+  msb = Wire.read();
+  lsb = Wire.read();
+  Wire.endTransmission();
+
+  return (msb << 8) | lsb;
+}
+
+/* Segment byte maps for numbers 0 to 9, "1" bit means segment is ON: */
+//                           "0"  "1"  "2"  "3"  "4"  "5"  "6"  "7"  "8"  "9"
+const byte SEGMENT_MAP[] = {0x7E,0x30,0x6D,0x79,0x33,0x5B,0x5F,0x70,0x7F,0x7B};
+
+#define DECIMAL_POINT 0x80
+
+void set_digit_7seg_codes( unsigned int value,
+                           byte scale, // position of the decimal point
+                           byte digits[],
+                           byte digits_length,
+                           byte offset )
+{
+  for( byte i = 0; i < 4; i++ ) {
+    if( i + offset >= digits_length ) break;
+    byte digit = value % 10;
+    value /= 10;
+    digits[i + offset] = SEGMENT_MAP[digit] | (i == scale ? DECIMAL_POINT : 0);
+  }
 }
 
 void setup ()
@@ -90,87 +131,43 @@ void loop()
   unsigned int msb, lsb;
   byte digits[8];
 
-  {
-    // Select the first FS2012 flow meter:
-    Wire.beginTransmission( i2c_multiplexer_addr );
-    Wire.write( flow_sensor_1_channel );
-    Wire.endTransmission();
-    Serial.print( "FS2012 sensor 1 selected;" );
-  
-    // Read the sensor:
-    Wire.beginTransmission( FS2012_I2C_addr );
-    // Following example at
-    // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
-    // request two bytes from the flow meter:
-    Wire.requestFrom( FS2012_I2C_addr, (uint8_t)2 );
-    // wait for response:
-    while(Wire.available() == 0);
-    msb = Wire.read();
-    lsb = Wire.read();
-    Serial.print( "msb = 0x" ); Serial.print( msb, HEX ); Serial.print( ", " );
-    Serial.print( "lsb = 0x" ); Serial.print( lsb, HEX ); Serial.print( ", " );
-    Wire.endTransmission();
-  
-    unsigned int iflow1 = (msb << 8) | lsb;
-    double flow1 = iflow1/scale;
+  unsigned int iflow1 = read_word_i2c_multiplexed(
+    flow_sensor_1_channel,
+    i2c_multiplexer_addr,
+    FS2012_I2C_addr
+  );
+  double flow1 = iflow1/scale;
 
-    // Convert to indicator digits:
-    unsigned int quotient = iflow1;
-    for( int i = 0; i < 4; i++ ) {
-      byte digit = quotient % 10;
-      quotient /= 10;
-      digits[i] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
-    }
+  set_digit_7seg_codes( iflow1, /*scale =*/3, 
+                        digits, sizeof(digits),
+                        /*offset =*/ 0 );
 
-    Serial.print("iflow1 = ");
-    Serial.print(iflow1);
-    Serial.print(" ");
-    Serial.print("Flow1 = ");
-    Serial.print(flow1, 3);
+  unsigned int iflow2 = read_word_i2c_multiplexed(
+    flow_sensor_2_channel,
+    i2c_multiplexer_addr,
+    FS2012_I2C_addr
+  );
+  double flow2 = iflow2/scale;
 
-    Serial.println("");
-  }
+  set_digit_7seg_codes( iflow2, /*scale =*/3, 
+                        digits, sizeof(digits),
+                        /*offset =*/ 4 );
 
-  {
-    // Select the second FS2012 flow meter:
-    Wire.beginTransmission( i2c_multiplexer_addr );
-    Wire.write( flow_sensor_2_channel );
-    Wire.endTransmission();
-    Serial.print( "FS2012 sensor 2 selected;" );
-  
-    // Read the sensor:
-    Wire.beginTransmission( FS2012_I2C_addr );
-    // Following example at
-    // https://www.electroschematics.com/9798/reading-temperatures-i2c-arduino/ (S.G.):
-    // request two bytes from the flow meter:
-    Wire.requestFrom( FS2012_I2C_addr, (uint8_t)2 );
-    // wait for response:
-    while(Wire.available() == 0);
-    msb = Wire.read();
-    lsb = Wire.read();
-    Serial.print( "msb = 0x" ); Serial.print( msb, HEX ); Serial.print( ", " );
-    Serial.print( "lsb = 0x" ); Serial.print( lsb, HEX ); Serial.print( ", " );
-    Wire.endTransmission();
-    
-    unsigned int iflow2 = (msb << 8) | lsb;
-    double flow2 = iflow2/scale;
-  
-    // Convert to indicator digits:
-    unsigned int quotient = iflow2;
-    for( int i = 0; i < 4; i++ ) {
-      byte digit = quotient % 10;
-      quotient /= 10;
-      digits[i+4] = SEGMENT_MAP[digit] | (i == 3 ? DECIMAL_POINT : 0);
-    }
+  Serial.print("iflow1: ");
+  Serial.print(iflow1);
+  Serial.print(" ");
+  Serial.print("flow1: ");
+  Serial.print(flow1, 3);
 
-    Serial.print("iflow2 = ");
-    Serial.print(iflow2);
-    Serial.print(" ");
-    Serial.print("Flow2 = ");
-    Serial.print(flow2, 3);
+  Serial.print(" ");
 
-    Serial.println("");
-  }
+  Serial.print("iflow2: ");
+  Serial.print(iflow2);
+  Serial.print(" ");
+  Serial.print("flow2: ");
+  Serial.print(flow2, 3);
+
+  Serial.println("");
 
   // Send the digits to the indicator:
   for( byte i = 0; i < 8; i++ ) {
